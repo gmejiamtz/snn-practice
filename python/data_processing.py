@@ -78,4 +78,8 @@ if __name__ == "__main__":
     print_hdf5_tree(file_path)
     plot_hdf5_timeseries(file_path, "Euler_imu", "ts", ["x", "y", "z"])
     plot_hdf5_timeseries(file_path, "angular_rate_imu", "ts", ["x", "y", "z"])
+    plot_hdf5_timeseries(file_path, "gyro_static_unbiased", "ts", ["x", "y", "z"])
+    plot_hdf5_timeseries(file_path, "position_OT", "ts", ["x", "y", "z"])
+    plot_hdf5_timeseries(file_path, "vel_imu", "ts", ["x", "y", "z"])
+    plot_hdf5_timeseries(file_path, "vel_over_height_imu", "ts", ["x", "y", "z"])
 

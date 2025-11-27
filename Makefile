@@ -13,7 +13,14 @@ run-pnr: run-pnr.tcl $(IPKERNEL_NAME)-$(PART)/$(IPKERNEL_NAME).xpr
 
 board-flash: $(IPKERNEL_NAME)-$(PART)/$(IPKERNEL_NAME).runs/impl_1/*.bit board-flash.tcl
 	vivado -mode batch -source board-flash.tcl -tclargs $<
-    
+
+page: docs/index.html
+docs/index.html: docs/slides.md
+	pandoc -t revealjs -s -o $@ $< \
+	-V revealjs-url=https://unpkg.com/reveal.js \
+	-V theme=black \
+    --include-in-header=docs/slides.css \
+	--slide-level 3
 
 clean:
 	rm -rf $(IPKERNEL_NAME)-$(PART)
@@ -21,5 +28,6 @@ clean:
 	rm -rf *~
 	rm -rf .run
 	rm -rf .Xil
+	rm -rf docs/index.html
 
-.PHONY: project
+.PHONY: project page

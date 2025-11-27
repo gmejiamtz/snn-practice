@@ -1,0 +1,11 @@
+# Downloaded Data
+python/extracted_data
+python/downloaded_data
+
+# Vivado project files
+snn-practice-xc7a35tcpg236-1
+vivado.*
+
+# Webpage
+
+docs/*.html

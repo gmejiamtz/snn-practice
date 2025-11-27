@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
-  <meta name="author" content="First Last">
-  <meta name="dcterms.date" content="1999-01-01">
-  <title>Title</title>
+  <meta name="author" content="Gary Mejia">
+  <meta name="dcterms.date" content="2025-12-05">
+  <title>Practice SNN on FPGA</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -73,23 +73,135 @@
     <div class="slides">
 
 <section id="title-slide">
-  <h1 class="title">Title</h1>
-  <p class="subtitle">Sub-title</p>
-  <p class="author">First Last</p>
-  <p class="date">January 1, 1999</p>
+  <h1 class="title">Practice SNN on FPGA</h1>
+  <p class="subtitle">Basys3 - Artix7</p>
+  <p class="author">Gary Mejia</p>
+  <p class="date">December 5, 2025</p>
 </section>
 
-<section id="template-slide" class="title-slide slide level2">
-<h2>Template Slide</h2>
-<p>adding more stuff</p>
+<section id="structure-of-presentation"
+class="title-slide slide level2">
+<h2>Structure of Presentation</h2>
+<ol type="1">
+<li>Prequisites of Project</li>
+<li>FPGA Design</li>
+<li>Data Processing</li>
+<li>Future Work</li>
+<li>Conclusion</li>
+</ol>
 </section>
 
-<section id="another-slide" class="title-slide slide level2">
-<h2>another slide</h2>
+<section>
+<section id="prequisites" class="title-slide slide level2">
+<h2>Prequisites</h2>
+
+</section>
+<section id="software" class="slide level3">
+<h3>Software</h3>
+<p>This project involves several software stacks to run. Software is
+classified by what it is targetting: data processing, FPGA flow,
+website/documentation</p>
+</section>
+<section id="data-processing" class="slide level3">
+<h3>Data processing</h3>
+<p>The dataset is stored in <code>hdf5</code> files or <code>.h5</code>
+files. An hdf5 reader or library is required extract data from these
+files. This project uses the Python <code>h5py</code> and
+<code>hdf5plugin</code> modules. To install them use the following:</p>
+<pre><code>conda install h5py
+pip install hdf5plugin matlibplot</code></pre>
+</section>
+<section id="how-to-process-data" class="slide level3">
+<h3>How to process data</h3>
+<p>Data processing is done through the central makefile commands:</p>
+<pre><code>#To download the dataset
+make download-dataset
+
+#To process dataset and make packets
+make process-dataset
+
+#To send packets to FPGA
+make send-to-fpga</code></pre>
+</section>
+<section id="fpga-flow" class="slide level3">
+<h3>FPGA Flow</h3>
+<p>This SNN is deployed on a Xilinx <code>Basys3</code> board with an
+Artix7 FPGA. The Xlinix Vivado version used for this project is
+<code>2025.2</code>.</p>
 <figure>
-<img data-src="img/logo.png" alt="Adding Image" />
-<figcaption aria-hidden="true">Adding Image</figcaption>
+<img data-src="img/Basys3-Rev.png"
+alt="Artix7 is equipped with 33k LUTs" />
+<figcaption aria-hidden="true">Artix7 is equipped with 33k
+LUTs</figcaption>
 </figure>
+</section>
+<section id="to-run-the-fpga-flow" class="slide level3">
+<h3>To run the FPGA Flow</h3>
+<p>The FPGA flow is ran through the central makefile commands:</p>
+<pre><code>#To create the Vivado project
+make project
+
+#To run simulations
+make run-sim
+
+#To run the FPGA flow and generate a bitstream
+make run-pnr
+
+#To flash the bitstream onto the FPGA
+make board-flash</code></pre>
+</section>
+<section id="documentation-flow" class="slide level3">
+<h3>Documentation Flow</h3>
+<p>To create this website, this repo uses <code>pandoc</code> along with
+<code>reveal.js</code> to generate the HTML slide show. This project
+specifically uses <code>pandoc 3.8.2.1</code> and thus is installed
+manually by doing the following:</p>
+<pre><code>wget https://github.com/jgm/pandoc/releases/download/3.8.2.1/pandoc-3.8.2.1-1-amd64.deb
+sudo apt install ./pandoc-3.8.2.1-1-amd64.deb</code></pre>
+</section>
+<section id="to-create-the-website" class="slide level3">
+<h3>To create the website</h3>
+<p>To create this website, use the central makefile command:</p>
+<pre><code>make page</code></pre>
+<p>Deployment is handled via <code>Github Actions</code> and the
+<code>deploy.yml</code> workflow file.</p>
+</section></section>
+<section>
+<section id="fpga-design" class="title-slide slide level2">
+<h2>FPGA Design</h2>
+
+</section>
+<section id="tbd" class="slide level3">
+<h3>TBD</h3>
+</section></section>
+<section>
+<section id="data-processing-1" class="title-slide slide level2">
+<h2>Data Processing</h2>
+
+</section>
+<section id="tbd-1" class="slide level3">
+<h3>TBD</h3>
+</section></section>
+<section>
+<section id="future-work" class="title-slide slide level2">
+<h2>Future Work</h2>
+
+</section>
+<section id="tbd-2" class="slide level3">
+<h3>TBD</h3>
+</section></section>
+<section>
+<section id="conclusion" class="title-slide slide level2">
+<h2>Conclusion</h2>
+
+</section>
+<section id="tbd-3" class="slide level3">
+<h3>TBD</h3>
+</section></section>
+<section id="thanks-for-watching" class="title-slide slide level2">
+<h2>Thanks for watching</h2>
+<p>Contributions are welcome at <a
+href="https://github.com/gmejiamtz/snn-practice">https://github.com/gmejiamtz/snn-practice</a></p>
 </section>
     </div>
   </div>

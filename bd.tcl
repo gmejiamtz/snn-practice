@@ -43,13 +43,6 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 # To test this script, run the following commands from Vivado Tcl console:
 # source design_1_script.tcl
 
-
-# The design that will be created by this Tcl script contains the following 
-# module references:
-# snn_axil
-
-# Please add the sources of those modules before sourcing this Tcl script.
-
 # If there is no project opened, this script will create a
 # project, but make sure you do not have an existing project
 # <./myproj/project_1.xpr> in the current working folder.
@@ -140,6 +133,7 @@ if { $bCheckIPs == 1 } {
 xilinx.com:ip:axi_uartlite:2.0\
 xilinx.com:ip:clk_wiz:6.0\
 xilinx.com:ip:util_vector_logic:2.0\
+user.org:user:snn_axil:1.0\
 "
 
    set list_ips_missing ""
@@ -157,31 +151,6 @@ xilinx.com:ip:util_vector_logic:2.0\
       set bCheckIPsPassed 0
    }
 
-}
-
-##################################################################
-# CHECK Modules
-##################################################################
-set bCheckModules 1
-if { $bCheckModules == 1 } {
-   set list_check_mods "\ 
-snn_axil\
-"
-
-   set list_mods_missing ""
-   common::send_gid_msg -ssname BD::TCL -id 2020 -severity "INFO" "Checking if the following modules exist in the project's sources: $list_check_mods ."
-
-   foreach mod_vlnv $list_check_mods {
-      if { [can_resolve_reference $mod_vlnv] == 0 } {
-         lappend list_mods_missing $mod_vlnv
-      }
-   }
-
-   if { $list_mods_missing ne "" } {
-      catch {common::send_gid_msg -ssname BD::TCL -id 2021 -severity "ERROR" "The following module(s) are not found in the project: $list_mods_missing" }
-      common::send_gid_msg -ssname BD::TCL -id 2022 -severity "INFO" "Please add source files for the missing module(s) above."
-      set bCheckIPsPassed 0
-   }
 }
 
 if { $bCheckIPsPassed != 1 } {
@@ -251,24 +220,16 @@ proc create_root_design { parentCell } {
   ] $util_vector_logic_0
 
 
-  # Create instance: snn_axil_0, and set properties
-  set block_name snn_axil
-  set block_cell_name snn_axil_0
-  if { [catch {set snn_axil_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $snn_axil_0 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-  
+  # Create instance: snn_axil_1, and set properties
+  set snn_axil_1 [ create_bd_cell -type ip -vlnv user.org:user:snn_axil:1.0 snn_axil_1 ]
+
   # Create interface connections
-  connect_bd_intf_net -intf_net snn_axil_0_m_axil [get_bd_intf_pins snn_axil_0/m_axil] [get_bd_intf_pins axi_uartlite_0/S_AXI]
+  connect_bd_intf_net -intf_net snn_axil_1_m_axil [get_bd_intf_pins snn_axil_1/m_axil] [get_bd_intf_pins axi_uartlite_0/S_AXI]
 
   # Create port connections
   connect_bd_net -net Net  [get_bd_pins clk_wiz_0/clk_out1] \
   [get_bd_pins axi_uartlite_0/s_axi_aclk] \
-  [get_bd_pins snn_axil_0/m_axil_clk]
+  [get_bd_pins snn_axil_1/m_axil_clk]
   connect_bd_net -net RsRx_1  [get_bd_ports RsRx] \
   [get_bd_pins axi_uartlite_0/rx]
   connect_bd_net -net axi_uartlite_0_tx  [get_bd_pins axi_uartlite_0/tx] \
@@ -280,10 +241,10 @@ proc create_root_design { parentCell } {
   [get_bd_pins clk_wiz_0/clk_in1]
   connect_bd_net -net util_vector_logic_0_Res  [get_bd_pins util_vector_logic_0/Res] \
   [get_bd_pins axi_uartlite_0/s_axi_aresetn] \
-  [get_bd_pins snn_axil_0/resetn_i]
+  [get_bd_pins snn_axil_1/resetn_i]
 
   # Create address segments
-  assign_bd_address -offset 0x40600000 -range 0x00010000 -target_address_space [get_bd_addr_spaces snn_axil_0/m_axil] [get_bd_addr_segs axi_uartlite_0/S_AXI/Reg] -force
+  assign_bd_address -offset 0x40600000 -range 0x00010000 -target_address_space [get_bd_addr_spaces snn_axil_1/m_axil] [get_bd_addr_segs axi_uartlite_0/S_AXI/Reg] -force
 
 
   # Restore current instance

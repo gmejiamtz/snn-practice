@@ -1,7 +1,6 @@
 REPO_ROOT=.
 PART=xc7a35tcpg236-1
 IPKERNEL_NAME=snn-practice
-VSOURCES += $(REPO_ROOT)/common/rtl/xor_gate.v
 VSOURCES += $(REPO_ROOT)/common/rtl/snn_axil.v
 CSOURCES += $(REPO_ROOT)/common/contraints/Basys-3-Master.xdc
 
@@ -25,6 +24,7 @@ docs/index.html: docs/slides.md
 
 clean:
 	rm -rf $(IPKERNEL_NAME)-$(PART)
+	rm -rf ip_repo
 	rm -rf *.jou *.log 
 	rm -rf *~
 	rm -rf .run

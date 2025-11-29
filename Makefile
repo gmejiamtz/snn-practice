@@ -2,6 +2,7 @@ REPO_ROOT=.
 PART=xc7a35tcpg236-1
 IPKERNEL_NAME=snn-practice
 VSOURCES += $(REPO_ROOT)/common/rtl/xor_gate.v
+VSOURCES += $(REPO_ROOT)/common/rtl/snn_axil.v
 CSOURCES += $(REPO_ROOT)/common/contraints/Basys-3-Master.xdc
 
 project: $(IPKERNEL_NAME)-$(PART)/$(IPKERNEL_NAME).xpr

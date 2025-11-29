@@ -46,7 +46,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 
 # The design that will be created by this Tcl script contains the following 
 # module references:
-# xor_gate
+# snn_axil
 
 # Please add the sources of those modules before sourcing this Tcl script.
 
@@ -132,12 +132,40 @@ if { $nRet != 0 } {
 
 set bCheckIPsPassed 1
 ##################################################################
+# CHECK IPs
+##################################################################
+set bCheckIPs 1
+if { $bCheckIPs == 1 } {
+   set list_check_ips "\ 
+xilinx.com:ip:axi_uartlite:2.0\
+xilinx.com:ip:clk_wiz:6.0\
+xilinx.com:ip:util_vector_logic:2.0\
+"
+
+   set list_ips_missing ""
+   common::send_gid_msg -ssname BD::TCL -id 2011 -severity "INFO" "Checking if the following IPs exist in the project's IP catalog: $list_check_ips ."
+
+   foreach ip_vlnv $list_check_ips {
+      set ip_obj [get_ipdefs -all $ip_vlnv]
+      if { $ip_obj eq "" } {
+         lappend list_ips_missing $ip_vlnv
+      }
+   }
+
+   if { $list_ips_missing ne "" } {
+      catch {common::send_gid_msg -ssname BD::TCL -id 2012 -severity "ERROR" "The following IPs are not found in the IP Catalog:\n  $list_ips_missing\n\nResolution: Please add the repository containing the IP(s) to the project." }
+      set bCheckIPsPassed 0
+   }
+
+}
+
+##################################################################
 # CHECK Modules
 ##################################################################
 set bCheckModules 1
 if { $bCheckModules == 1 } {
    set list_check_mods "\ 
-xor_gate\
+snn_axil\
 "
 
    set list_mods_missing ""
@@ -202,30 +230,60 @@ proc create_root_design { parentCell } {
   # Create interface ports
 
   # Create ports
-  set btnL [ create_bd_port -dir I btnL ]
-  set btnR [ create_bd_port -dir I btnR ]
-  set led [ create_bd_port -dir O led ]
+  set clkin [ create_bd_port -dir I -type clk -freq_hz 40000000 clkin ]
+  set btnC [ create_bd_port -dir I btnC ]
+  set RsRx [ create_bd_port -dir I RsRx ]
+  set RsTx [ create_bd_port -dir O RsTx ]
 
-  # Create instance: xor_gate_0, and set properties
-  set block_name xor_gate
-  set block_cell_name xor_gate_0
-  if { [catch {set xor_gate_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  # Create instance: axi_uartlite_0, and set properties
+  set axi_uartlite_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_uartlite:2.0 axi_uartlite_0 ]
+  set_property CONFIG.C_BAUDRATE {115200} $axi_uartlite_0
+
+
+  # Create instance: clk_wiz_0, and set properties
+  set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.0 clk_wiz_0 ]
+
+  # Create instance: util_vector_logic_0, and set properties
+  set util_vector_logic_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.0 util_vector_logic_0 ]
+  set_property -dict [list \
+    CONFIG.C_OPERATION {not} \
+    CONFIG.C_SIZE {1} \
+  ] $util_vector_logic_0
+
+
+  # Create instance: snn_axil_0, and set properties
+  set block_name snn_axil
+  set block_cell_name snn_axil_0
+  if { [catch {set snn_axil_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $xor_gate_0 eq "" } {
+   } elseif { $snn_axil_0 eq "" } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
   
+  # Create interface connections
+  connect_bd_intf_net -intf_net snn_axil_0_m_axil [get_bd_intf_pins snn_axil_0/m_axil] [get_bd_intf_pins axi_uartlite_0/S_AXI]
+
   # Create port connections
-  connect_bd_net -net btnL_1  [get_bd_ports btnL] \
-  [get_bd_pins xor_gate_0/a_i]
-  connect_bd_net -net btnR_1  [get_bd_ports btnR] \
-  [get_bd_pins xor_gate_0/b_i]
-  connect_bd_net -net xor_gate_0_c_o  [get_bd_pins xor_gate_0/c_o] \
-  [get_bd_ports led]
+  connect_bd_net -net Net  [get_bd_pins clk_wiz_0/clk_out1] \
+  [get_bd_pins axi_uartlite_0/s_axi_aclk] \
+  [get_bd_pins snn_axil_0/m_axil_clk]
+  connect_bd_net -net RsRx_1  [get_bd_ports RsRx] \
+  [get_bd_pins axi_uartlite_0/rx]
+  connect_bd_net -net axi_uartlite_0_tx  [get_bd_pins axi_uartlite_0/tx] \
+  [get_bd_ports RsTx]
+  connect_bd_net -net btnC_1  [get_bd_ports btnC] \
+  [get_bd_pins clk_wiz_0/reset] \
+  [get_bd_pins util_vector_logic_0/Op1]
+  connect_bd_net -net clkin_1  [get_bd_ports clkin] \
+  [get_bd_pins clk_wiz_0/clk_in1]
+  connect_bd_net -net util_vector_logic_0_Res  [get_bd_pins util_vector_logic_0/Res] \
+  [get_bd_pins axi_uartlite_0/s_axi_aresetn] \
+  [get_bd_pins snn_axil_0/resetn_i]
 
   # Create address segments
+  assign_bd_address -offset 0x40600000 -range 0x00010000 -target_address_space [get_bd_addr_spaces snn_axil_0/m_axil] [get_bd_addr_segs axi_uartlite_0/S_AXI/Reg] -force
 
 
   # Restore current instance

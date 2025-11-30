@@ -9,8 +9,9 @@ set_property board_part digilentinc.com:basys3:part0:1.2 [current_project]
 
 # Add all sources for project. If they are included in an IP diagram,
 # they must be verilog files for some reason, not .sv.
-add_files -norecurse ./common/rtl/snn_axil.v
+add_files -norecurse ./common/rtl/snn_axil.sv
 add_files -fileset constrs_1 -norecurse ./common/contraints/Basys-3-Master.xdc
+add_files -fileset sim_1 -norecurse ./common/sim/tb_snn_axil.sv
 
 update_compile_order -fileset sources_1
 

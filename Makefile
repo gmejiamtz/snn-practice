@@ -3,7 +3,7 @@ PART=xc7a35tcpg236-1
 IPKERNEL_NAME=snn-practice
 IP_NAME=snn-axil
 IP_DIR=ip_repo
-VSOURCES += $(REPO_ROOT)/common/rtl/snn_axil.v
+VSOURCES += $(REPO_ROOT)/common/rtl/snn_axil.sv
 CSOURCES += $(REPO_ROOT)/common/contraints/Basys-3-Master.xdc
 
 create_ip: create_snn_axil_project.tcl bd.tcl $(VSOURCES) $(CSOURCES)

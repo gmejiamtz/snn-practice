@@ -94,7 +94,25 @@ module tb_snn_axil;
         @(negedge M00_ACLK);
         $display("AW Over");
         M00_axi_awready = 0;
-
+    end
+    endtask
+    
+    task axi_ar_transaction(input [7:0] data); begin
+        @(negedge M00_ACLK);
+        M00_axi_arready = 1;
+        @(posedge M00_ACLK);
+        $display("AR Ready");
+        @(negedge M00_ACLK);
+        $display("Read Valid");
+        M00_axi_rvalid = 1;
+        M00_axi_rdata = data;
+        @(posedge M00_ACLK);
+        $display("Read Transaction Occuring");
+        @(negedge M00_ACLK);
+        $display("AR Over");
+        M00_axi_arready = 0;
+        M00_axi_rvalid = 0;
+        M00_axi_rdata = 0;
     end
     endtask
  
@@ -102,10 +120,10 @@ module tb_snn_axil;
     initial begin
 
         @(posedge M00_ARESETN);
-        
+        axi_ar_transaction(8'h67);
+        repeat (5) @(posedge M00_ACLK);
         axi_aw_transaction();
-        repeat (10) @(posedge M00_ACLK);
-
+        repeat (5) @(posedge M00_ACLK);
         $display("Simulation Done");
 
         $finish;

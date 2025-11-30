@@ -70,7 +70,7 @@ end
 //set high when SNN needs to transmit - hardcoded high for now
 
 always_comb begin
-    M00_axi_wdata = {24'b0,rx_data_r};
+    M00_axi_wdata = {24'b0,8'h67};
 end
 
 always_ff @(posedge M00_ACLK) begin
@@ -126,9 +126,6 @@ end
 
 always_comb begin
     M00_axi_rready = 1'b1;
-    rx_data_r = '0;
-    if(M00_axi_rvalid & M00_axi_rready) begin
-        rx_data_r = M00_axi_rdata;
-    end
 end
+
 endmodule

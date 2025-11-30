@@ -1,12 +1,17 @@
 REPO_ROOT=.
 PART=xc7a35tcpg236-1
 IPKERNEL_NAME=snn-practice
+IP_NAME=snn-axil
 VSOURCES += $(REPO_ROOT)/common/rtl/snn_axil.v
 CSOURCES += $(REPO_ROOT)/common/contraints/Basys-3-Master.xdc
 
 project: $(IPKERNEL_NAME)-$(PART)/$(IPKERNEL_NAME).xpr
 $(IPKERNEL_NAME)-$(PART)/$(IPKERNEL_NAME).xpr: create_bd.tcl bd.tcl $(VSOURCES) $(CSOURCES)
 	vivado -mode batch -source create_bd.tcl -tclargs $(PART) $(IPKERNEL_NAME)
+
+snn-axil-project: $(IP_NAME)-$(PART)/$(IP_NAME).xpr
+$(IP_NAME)-$(PART)/$(IP_NAME).xpr: create_snn_axil_project.tcl bd.tcl $(VSOURCES) $(CSOURCES)
+	vivado -mode batch -source create_snn_axil_project.tcl -tclargs $(PART) $(IP_NAME)
 
 run-pnr: run-pnr.tcl $(IPKERNEL_NAME)-$(PART)/$(IPKERNEL_NAME).xpr
 	vivado -mode batch -source $< -tclargs $(PART) $(IPKERNEL_NAME)
@@ -24,6 +29,7 @@ docs/index.html: docs/slides.md
 
 clean:
 	rm -rf $(IPKERNEL_NAME)-$(PART)
+	rm -rf $(IP_NAME)-$(PART)
 	rm -rf ip_repo
 	rm -rf *.jou *.log 
 	rm -rf *~
@@ -31,4 +37,4 @@ clean:
 	rm -rf .Xil
 	rm -rf docs/index.html
 
-.PHONY: project page
+.PHONY: project page snn-axil-project

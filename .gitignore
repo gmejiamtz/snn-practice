@@ -4,6 +4,7 @@ python/downloaded_data
 
 # Vivado project files
 snn-practice-xc7a35tcpg236-1
+snn-axil-xc7a35tcpg236-1
 vivado.*
 ip_repo
 

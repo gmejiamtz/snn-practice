@@ -14,6 +14,17 @@ add_files -fileset constrs_1 -norecurse ./common/contraints/Basys-3-Master.xdc
 
 update_compile_order -fileset sources_1
 
+#Adding custom ip
+
+# Assuming repo_root is already defined
+set ip_repo [file join $repo_root "ip_repo"]
+
+# Add this repository to the current project
+set_property ip_repo_paths $ip_repo [current_project]
+
+# Update the catalog so Vivado sees your IP
+update_ip_catalog -rebuild
+
 source $proj_root/bd.tcl
 
 #Create wrapper for top block design

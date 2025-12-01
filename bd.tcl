@@ -132,10 +132,9 @@ if { $bCheckIPs == 1 } {
    set list_check_ips "\ 
 xilinx.com:ip:axi_uartlite:2.0\
 xilinx.com:ip:clk_wiz:6.0\
-xilinx.com:ip:proc_sys_reset:5.0\
-xilinx.com:ip:util_vector_logic:2.0\
 xilinx.com:ip:system_ila:1.1\
 user.org:user:snn_axil:1.0\
+xilinx.com:ip:util_vector_logic:2.0\
 "
 
    set list_ips_missing ""
@@ -245,29 +244,14 @@ proc create_root_design { parentCell } {
   ] $clk_wiz_0
 
 
-  # Create instance: proc_sys_reset_0, and set properties
-  set proc_sys_reset_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 proc_sys_reset_0 ]
-  set_property -dict [list \
-    CONFIG.C_AUX_RESET_HIGH {1} \
-    CONFIG.C_AUX_RST_WIDTH {1} \
-    CONFIG.C_EXT_RST_WIDTH {1} \
-    CONFIG.RESET_BOARD_INTERFACE {reset} \
-  ] $proc_sys_reset_0
-
-
-  # Create instance: util_vector_logic_0, and set properties
-  set util_vector_logic_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.0 util_vector_logic_0 ]
-  set_property -dict [list \
-    CONFIG.C_OPERATION {not} \
-    CONFIG.C_SIZE {1} \
-  ] $util_vector_logic_0
-
-
   # Create instance: system_ila_0, and set properties
   set system_ila_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:system_ila:1.1 system_ila_0 ]
   set_property -dict [list \
-    CONFIG.C_MON_TYPE {INTERFACE} \
+    CONFIG.C_MON_TYPE {MIX} \
     CONFIG.C_NUM_MONITOR_SLOTS {2} \
+    CONFIG.C_NUM_OF_PROBES {2} \
+    CONFIG.C_PROBE0_TYPE {0} \
+    CONFIG.C_PROBE1_TYPE {0} \
     CONFIG.C_SLOT_0_INTF_TYPE {xilinx.com:interface:uart_rtl:1.0} \
     CONFIG.C_SLOT_0_TYPE {0} \
     CONFIG.C_SLOT_1_APC_EN {1} \
@@ -288,6 +272,14 @@ proc create_root_design { parentCell } {
   # Create instance: snn_axil_0, and set properties
   set snn_axil_0 [ create_bd_cell -type ip -vlnv user.org:user:snn_axil:1.0 snn_axil_0 ]
 
+  # Create instance: util_vector_logic_0, and set properties
+  set util_vector_logic_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.0 util_vector_logic_0 ]
+  set_property -dict [list \
+    CONFIG.C_OPERATION {not} \
+    CONFIG.C_SIZE {1} \
+  ] $util_vector_logic_0
+
+
   # Create interface connections
   connect_bd_intf_net -intf_net axi_uartlite_0_UART [get_bd_intf_ports usb_uart] [get_bd_intf_pins axi_uartlite_0/UART]
 connect_bd_intf_net -intf_net [get_bd_intf_nets axi_uartlite_0_UART] [get_bd_intf_ports usb_uart] [get_bd_intf_pins system_ila_0/SLOT_0_UART]
@@ -297,24 +289,26 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets snn_axil_0_M00_AXI] [get_bd_intf
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_intf_nets snn_axil_0_M00_AXI]
 
   # Create port connections
-  connect_bd_net -net Net  [get_bd_pins proc_sys_reset_0/peripheral_aresetn] \
+  connect_bd_net -net Net  [get_bd_pins util_vector_logic_0/Res] \
   [get_bd_pins axi_uartlite_0/s_axi_aresetn] \
   [get_bd_pins system_ila_0/resetn] \
-  [get_bd_pins snn_axil_0/M00_ARESETN]
+  [get_bd_pins snn_axil_0/M00_ARESETN] \
+  [get_bd_pins system_ila_0/probe1]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets Net]
   connect_bd_net -net clk_1  [get_bd_ports clk] \
   [get_bd_pins clk_wiz_0/clk_in1]
   connect_bd_net -net clk_wiz_0_clk_out1  [get_bd_pins clk_wiz_0/clk_out1] \
   [get_bd_pins axi_uartlite_0/s_axi_aclk] \
-  [get_bd_pins proc_sys_reset_0/slowest_sync_clk] \
   [get_bd_pins system_ila_0/clk] \
   [get_bd_pins snn_axil_0/M00_ACLK]
+  connect_bd_net -net interrupt  [get_bd_pins axi_uartlite_0/interrupt] \
+  [get_bd_pins system_ila_0/probe0]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets interrupt]
   connect_bd_net -net reset_1  [get_bd_ports reset] \
   [get_bd_pins clk_wiz_0/reset] \
   [get_bd_pins util_vector_logic_0/Op1]
   connect_bd_net -net sw_1  [get_bd_ports sw] \
   [get_bd_ports led]
-  connect_bd_net -net util_vector_logic_0_Res  [get_bd_pins util_vector_logic_0/Res] \
-  [get_bd_pins proc_sys_reset_0/ext_reset_in]
 
   # Create address segments
   assign_bd_address -offset 0x00000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces snn_axil_0/M00_AXI] [get_bd_addr_segs axi_uartlite_0/S_AXI/Reg] -force

@@ -92,8 +92,13 @@ module tb_snn_axil;
         @(posedge M00_ACLK);
         $display("AW Ready");
         @(negedge M00_ACLK);
-        $display("AW Over");
-        M00_axi_awready = 0;
+        $display("Write Ready");
+        M00_axi_wready = 1;
+        @(posedge M00_ACLK);
+        $display("Write Occured");
+        @(negedge M00_ACLK);
+        $display("Write Over");
+        M00_axi_wready = 0;
     end
     endtask
     

@@ -22,14 +22,13 @@ update_compile_order -fileset sources_1
 # IP repository path
 set ip_repo "${repo_root}/${ip_dir}"
 
-create_peripheral user.org user snn_axil 1.0 -dir $ip_repo
-
-add_peripheral_interface M00_AXI -interface_mode master -axi_type lite [ipx::find_open_core user.org:user:snn_axil:1.0]
-
-generate_peripheral -bfm_example_design -debug_hw_example_design [ipx::find_open_core user.org:user:snn_axil:1.0]
-
-write_peripheral [ipx::find_open_core user.org:user:snn_axil:1.0]
-
-set_property ip_repo_paths "$ip_repo/snn_axil_1_0" [current_project]
+ipx::package_project -root_dir $ip_repo -vendor user.org -library user -taxonomy /UserIP -import_files
+update_compile_order -fileset sources_1
+set_property core_revision 2 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::check_integrity [ipx::current_core]
+ipx::save_core [ipx::current_core]
+set_property  ip_repo_paths  $ip_repo [current_project]
 
 update_ip_catalog -rebuild

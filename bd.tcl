@@ -130,11 +130,12 @@ set bCheckIPsPassed 1
 set bCheckIPs 1
 if { $bCheckIPs == 1 } {
    set list_check_ips "\ 
-user.org:user:snn_axil:1.0\
 xilinx.com:ip:axi_uartlite:2.0\
 xilinx.com:ip:clk_wiz:6.0\
+xilinx.com:ip:proc_sys_reset:5.0\
 xilinx.com:ip:util_vector_logic:2.0\
-xilinx.com:ip:xlconstant:1.1\
+xilinx.com:ip:system_ila:1.1\
+user.org:user:snn_axil:1.0\
 "
 
    set list_ips_missing ""
@@ -207,9 +208,8 @@ proc create_root_design { parentCell } {
    CONFIG.POLARITY {ACTIVE_HIGH} \
  ] $reset
   set clk [ create_bd_port -dir I -type clk -freq_hz 40000000 clk ]
-
-  # Create instance: snn_axil_0, and set properties
-  set snn_axil_0 [ create_bd_cell -type ip -vlnv user.org:user:snn_axil:1.0 snn_axil_0 ]
+  set sw [ create_bd_port -dir I -from 15 -to 0 -type data sw ]
+  set led [ create_bd_port -dir O -from 15 -to 0 led ]
 
   # Create instance: axi_uartlite_0, and set properties
   set axi_uartlite_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_uartlite:2.0 axi_uartlite_0 ]
@@ -222,9 +222,37 @@ proc create_root_design { parentCell } {
   # Create instance: clk_wiz_0, and set properties
   set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.0 clk_wiz_0 ]
   set_property -dict [list \
+    CONFIG.CLKIN1_JITTER_PS {250.0} \
+    CONFIG.CLKOUT1_DRIVES {BUFG} \
+    CONFIG.CLKOUT1_JITTER {274.086} \
+    CONFIG.CLKOUT1_PHASE_ERROR {305.681} \
+    CONFIG.CLKOUT2_DRIVES {BUFG} \
+    CONFIG.CLKOUT3_DRIVES {BUFG} \
+    CONFIG.CLKOUT4_DRIVES {BUFG} \
+    CONFIG.CLKOUT5_DRIVES {BUFG} \
+    CONFIG.CLKOUT6_DRIVES {BUFG} \
+    CONFIG.CLKOUT7_DRIVES {BUFG} \
+    CONFIG.MMCM_BANDWIDTH {OPTIMIZED} \
+    CONFIG.MMCM_CLKFBOUT_MULT_F {45} \
+    CONFIG.MMCM_CLKIN1_PERIOD {25.000} \
+    CONFIG.MMCM_CLKIN2_PERIOD {10.0} \
+    CONFIG.MMCM_CLKOUT0_DIVIDE_F {9} \
+    CONFIG.MMCM_COMPENSATION {ZHOLD} \
+    CONFIG.MMCM_DIVCLK_DIVIDE {2} \
+    CONFIG.PRIMITIVE {PLL} \
     CONFIG.RESET_BOARD_INTERFACE {reset} \
     CONFIG.USE_BOARD_FLOW {true} \
   ] $clk_wiz_0
+
+
+  # Create instance: proc_sys_reset_0, and set properties
+  set proc_sys_reset_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 proc_sys_reset_0 ]
+  set_property -dict [list \
+    CONFIG.C_AUX_RESET_HIGH {1} \
+    CONFIG.C_AUX_RST_WIDTH {1} \
+    CONFIG.C_EXT_RST_WIDTH {1} \
+    CONFIG.RESET_BOARD_INTERFACE {reset} \
+  ] $proc_sys_reset_0
 
 
   # Create instance: util_vector_logic_0, and set properties
@@ -235,27 +263,58 @@ proc create_root_design { parentCell } {
   ] $util_vector_logic_0
 
 
-  # Create instance: xlconstant_0, and set properties
-  set xlconstant_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_0 ]
+  # Create instance: system_ila_0, and set properties
+  set system_ila_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:system_ila:1.1 system_ila_0 ]
+  set_property -dict [list \
+    CONFIG.C_MON_TYPE {INTERFACE} \
+    CONFIG.C_NUM_MONITOR_SLOTS {2} \
+    CONFIG.C_SLOT_0_INTF_TYPE {xilinx.com:interface:uart_rtl:1.0} \
+    CONFIG.C_SLOT_0_TYPE {0} \
+    CONFIG.C_SLOT_1_APC_EN {1} \
+    CONFIG.C_SLOT_1_AXI_AR_SEL_DATA {1} \
+    CONFIG.C_SLOT_1_AXI_AR_SEL_TRIG {1} \
+    CONFIG.C_SLOT_1_AXI_AW_SEL_DATA {1} \
+    CONFIG.C_SLOT_1_AXI_AW_SEL_TRIG {1} \
+    CONFIG.C_SLOT_1_AXI_B_SEL_DATA {1} \
+    CONFIG.C_SLOT_1_AXI_B_SEL_TRIG {1} \
+    CONFIG.C_SLOT_1_AXI_R_SEL_DATA {1} \
+    CONFIG.C_SLOT_1_AXI_R_SEL_TRIG {1} \
+    CONFIG.C_SLOT_1_AXI_W_SEL_DATA {1} \
+    CONFIG.C_SLOT_1_AXI_W_SEL_TRIG {1} \
+    CONFIG.C_SLOT_1_INTF_TYPE {xilinx.com:interface:aximm_rtl:1.0} \
+  ] $system_ila_0
+
+
+  # Create instance: snn_axil_0, and set properties
+  set snn_axil_0 [ create_bd_cell -type ip -vlnv user.org:user:snn_axil:1.0 snn_axil_0 ]
 
   # Create interface connections
   connect_bd_intf_net -intf_net axi_uartlite_0_UART [get_bd_intf_ports usb_uart] [get_bd_intf_pins axi_uartlite_0/UART]
+connect_bd_intf_net -intf_net [get_bd_intf_nets axi_uartlite_0_UART] [get_bd_intf_ports usb_uart] [get_bd_intf_pins system_ila_0/SLOT_0_UART]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_intf_nets axi_uartlite_0_UART]
   connect_bd_intf_net -intf_net snn_axil_0_M00_AXI [get_bd_intf_pins snn_axil_0/M00_AXI] [get_bd_intf_pins axi_uartlite_0/S_AXI]
+connect_bd_intf_net -intf_net [get_bd_intf_nets snn_axil_0_M00_AXI] [get_bd_intf_pins snn_axil_0/M00_AXI] [get_bd_intf_pins system_ila_0/SLOT_1_AXI]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_intf_nets snn_axil_0_M00_AXI]
 
   # Create port connections
-  connect_bd_net -net Net  [get_bd_pins util_vector_logic_0/Res] \
-  [get_bd_pins snn_axil_0/m00_axi_aresetn] \
-  [get_bd_pins axi_uartlite_0/s_axi_aresetn]
+  connect_bd_net -net Net  [get_bd_pins proc_sys_reset_0/peripheral_aresetn] \
+  [get_bd_pins axi_uartlite_0/s_axi_aresetn] \
+  [get_bd_pins system_ila_0/resetn] \
+  [get_bd_pins snn_axil_0/M00_ARESETN]
   connect_bd_net -net clk_1  [get_bd_ports clk] \
   [get_bd_pins clk_wiz_0/clk_in1]
   connect_bd_net -net clk_wiz_0_clk_out1  [get_bd_pins clk_wiz_0/clk_out1] \
-  [get_bd_pins snn_axil_0/m00_axi_aclk] \
-  [get_bd_pins axi_uartlite_0/s_axi_aclk]
+  [get_bd_pins axi_uartlite_0/s_axi_aclk] \
+  [get_bd_pins proc_sys_reset_0/slowest_sync_clk] \
+  [get_bd_pins system_ila_0/clk] \
+  [get_bd_pins snn_axil_0/M00_ACLK]
   connect_bd_net -net reset_1  [get_bd_ports reset] \
   [get_bd_pins clk_wiz_0/reset] \
   [get_bd_pins util_vector_logic_0/Op1]
-  connect_bd_net -net xlconstant_0_dout  [get_bd_pins xlconstant_0/dout] \
-  [get_bd_pins snn_axil_0/m00_axi_init_axi_txn]
+  connect_bd_net -net sw_1  [get_bd_ports sw] \
+  [get_bd_ports led]
+  connect_bd_net -net util_vector_logic_0_Res  [get_bd_pins util_vector_logic_0/Res] \
+  [get_bd_pins proc_sys_reset_0/ext_reset_in]
 
   # Create address segments
   assign_bd_address -offset 0x00000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces snn_axil_0/M00_AXI] [get_bd_addr_segs axi_uartlite_0/S_AXI/Reg] -force

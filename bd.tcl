@@ -131,7 +131,6 @@ set bCheckIPs 1
 if { $bCheckIPs == 1 } {
    set list_check_ips "\ 
 xilinx.com:ip:axi_uartlite:2.0\
-xilinx.com:ip:clk_wiz:6.0\
 xilinx.com:ip:system_ila:1.1\
 user.org:user:snn_axil:1.0\
 xilinx.com:ip:util_vector_logic:2.0\
@@ -218,32 +217,6 @@ proc create_root_design { parentCell } {
   ] $axi_uartlite_0
 
 
-  # Create instance: clk_wiz_0, and set properties
-  set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.0 clk_wiz_0 ]
-  set_property -dict [list \
-    CONFIG.CLKIN1_JITTER_PS {250.0} \
-    CONFIG.CLKOUT1_DRIVES {BUFG} \
-    CONFIG.CLKOUT1_JITTER {274.086} \
-    CONFIG.CLKOUT1_PHASE_ERROR {305.681} \
-    CONFIG.CLKOUT2_DRIVES {BUFG} \
-    CONFIG.CLKOUT3_DRIVES {BUFG} \
-    CONFIG.CLKOUT4_DRIVES {BUFG} \
-    CONFIG.CLKOUT5_DRIVES {BUFG} \
-    CONFIG.CLKOUT6_DRIVES {BUFG} \
-    CONFIG.CLKOUT7_DRIVES {BUFG} \
-    CONFIG.MMCM_BANDWIDTH {OPTIMIZED} \
-    CONFIG.MMCM_CLKFBOUT_MULT_F {45} \
-    CONFIG.MMCM_CLKIN1_PERIOD {25.000} \
-    CONFIG.MMCM_CLKIN2_PERIOD {10.0} \
-    CONFIG.MMCM_CLKOUT0_DIVIDE_F {9} \
-    CONFIG.MMCM_COMPENSATION {ZHOLD} \
-    CONFIG.MMCM_DIVCLK_DIVIDE {2} \
-    CONFIG.PRIMITIVE {PLL} \
-    CONFIG.RESET_BOARD_INTERFACE {reset} \
-    CONFIG.USE_BOARD_FLOW {true} \
-  ] $clk_wiz_0
-
-
   # Create instance: system_ila_0, and set properties
   set system_ila_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:system_ila:1.1 system_ila_0 ]
   set_property -dict [list \
@@ -295,9 +268,7 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets snn_axil_0_M00_AXI] [get_bd_intf
   [get_bd_pins snn_axil_0/M00_ARESETN] \
   [get_bd_pins system_ila_0/probe1]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets Net]
-  connect_bd_net -net clk_1  [get_bd_ports clk] \
-  [get_bd_pins clk_wiz_0/clk_in1]
-  connect_bd_net -net clk_wiz_0_clk_out1  [get_bd_pins clk_wiz_0/clk_out1] \
+  connect_bd_net -net clk_wiz_0_clk_out1  [get_bd_ports clk] \
   [get_bd_pins axi_uartlite_0/s_axi_aclk] \
   [get_bd_pins system_ila_0/clk] \
   [get_bd_pins snn_axil_0/M00_ACLK]
@@ -305,7 +276,6 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets snn_axil_0_M00_AXI] [get_bd_intf
   [get_bd_pins system_ila_0/probe0]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets interrupt]
   connect_bd_net -net reset_1  [get_bd_ports reset] \
-  [get_bd_pins clk_wiz_0/reset] \
   [get_bd_pins util_vector_logic_0/Op1]
   connect_bd_net -net sw_1  [get_bd_ports sw] \
   [get_bd_ports led]

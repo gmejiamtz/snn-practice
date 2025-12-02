@@ -8,10 +8,21 @@ set_property board_part digilentinc.com:basys3:part0:1.2 [current_project]
 
 # Add all sources for project. If they are included in an IP diagram,
 # they must be verilog files for some reason, not .sv.
-add_files -norecurse ./common/rtl/xor_gate.v
+add_files -norecurse ./common/rtl/snn_axil.sv
 add_files -fileset constrs_1 -norecurse ./common/contraints/Basys-3-Master.xdc
 
 update_compile_order -fileset sources_1
+
+#Adding custom ip
+
+# Assuming repo_root is already defined
+set ip_repo [file join $repo_root "ip_repo"]
+
+# Add this repository to the current project
+set_property ip_repo_paths $ip_repo [current_project]
+
+# Update the catalog so Vivado sees your IP
+update_ip_catalog -rebuild
 
 source $proj_root/bd.tcl
 

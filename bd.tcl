@@ -43,13 +43,6 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 # To test this script, run the following commands from Vivado Tcl console:
 # source design_1_script.tcl
 
-
-# The design that will be created by this Tcl script contains the following 
-# module references:
-# xor_gate
-
-# Please add the sources of those modules before sourcing this Tcl script.
-
 # If there is no project opened, this script will create a
 # project, but make sure you do not have an existing project
 # <./myproj/project_1.xpr> in the current working folder.
@@ -132,28 +125,32 @@ if { $nRet != 0 } {
 
 set bCheckIPsPassed 1
 ##################################################################
-# CHECK Modules
+# CHECK IPs
 ##################################################################
-set bCheckModules 1
-if { $bCheckModules == 1 } {
-   set list_check_mods "\ 
-xor_gate\
+set bCheckIPs 1
+if { $bCheckIPs == 1 } {
+   set list_check_ips "\ 
+xilinx.com:ip:axi_uartlite:2.0\
+xilinx.com:ip:system_ila:1.1\
+user.org:user:snn_axil:1.0\
+xilinx.com:ip:util_vector_logic:2.0\
 "
 
-   set list_mods_missing ""
-   common::send_gid_msg -ssname BD::TCL -id 2020 -severity "INFO" "Checking if the following modules exist in the project's sources: $list_check_mods ."
+   set list_ips_missing ""
+   common::send_gid_msg -ssname BD::TCL -id 2011 -severity "INFO" "Checking if the following IPs exist in the project's IP catalog: $list_check_ips ."
 
-   foreach mod_vlnv $list_check_mods {
-      if { [can_resolve_reference $mod_vlnv] == 0 } {
-         lappend list_mods_missing $mod_vlnv
+   foreach ip_vlnv $list_check_ips {
+      set ip_obj [get_ipdefs -all $ip_vlnv]
+      if { $ip_obj eq "" } {
+         lappend list_ips_missing $ip_vlnv
       }
    }
 
-   if { $list_mods_missing ne "" } {
-      catch {common::send_gid_msg -ssname BD::TCL -id 2021 -severity "ERROR" "The following module(s) are not found in the project: $list_mods_missing" }
-      common::send_gid_msg -ssname BD::TCL -id 2022 -severity "INFO" "Please add source files for the missing module(s) above."
+   if { $list_ips_missing ne "" } {
+      catch {common::send_gid_msg -ssname BD::TCL -id 2012 -severity "ERROR" "The following IPs are not found in the IP Catalog:\n  $list_ips_missing\n\nResolution: Please add the repository containing the IP(s) to the project." }
       set bCheckIPsPassed 0
    }
+
 }
 
 if { $bCheckIPsPassed != 1 } {
@@ -200,32 +197,91 @@ proc create_root_design { parentCell } {
 
 
   # Create interface ports
+  set usb_uart [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:uart_rtl:1.0 usb_uart ]
+
 
   # Create ports
-  set btnL [ create_bd_port -dir I btnL ]
-  set btnR [ create_bd_port -dir I btnR ]
-  set led [ create_bd_port -dir O led ]
+  set reset [ create_bd_port -dir I -type rst reset ]
+  set_property -dict [ list \
+   CONFIG.POLARITY {ACTIVE_HIGH} \
+ ] $reset
+  set clk [ create_bd_port -dir I -type clk -freq_hz 40000000 clk ]
+  set sw [ create_bd_port -dir I -from 15 -to 0 -type data sw ]
+  set led [ create_bd_port -dir O -from 15 -to 0 led ]
 
-  # Create instance: xor_gate_0, and set properties
-  set block_name xor_gate
-  set block_cell_name xor_gate_0
-  if { [catch {set xor_gate_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $xor_gate_0 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-  
+  # Create instance: axi_uartlite_0, and set properties
+  set axi_uartlite_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_uartlite:2.0 axi_uartlite_0 ]
+  set_property -dict [list \
+    CONFIG.UARTLITE_BOARD_INTERFACE {usb_uart} \
+    CONFIG.USE_BOARD_FLOW {true} \
+  ] $axi_uartlite_0
+
+
+  # Create instance: system_ila_0, and set properties
+  set system_ila_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:system_ila:1.1 system_ila_0 ]
+  set_property -dict [list \
+    CONFIG.C_MON_TYPE {MIX} \
+    CONFIG.C_NUM_MONITOR_SLOTS {2} \
+    CONFIG.C_NUM_OF_PROBES {2} \
+    CONFIG.C_PROBE0_TYPE {0} \
+    CONFIG.C_PROBE1_TYPE {0} \
+    CONFIG.C_SLOT_0_INTF_TYPE {xilinx.com:interface:uart_rtl:1.0} \
+    CONFIG.C_SLOT_0_TYPE {0} \
+    CONFIG.C_SLOT_1_APC_EN {1} \
+    CONFIG.C_SLOT_1_AXI_AR_SEL_DATA {1} \
+    CONFIG.C_SLOT_1_AXI_AR_SEL_TRIG {1} \
+    CONFIG.C_SLOT_1_AXI_AW_SEL_DATA {1} \
+    CONFIG.C_SLOT_1_AXI_AW_SEL_TRIG {1} \
+    CONFIG.C_SLOT_1_AXI_B_SEL_DATA {1} \
+    CONFIG.C_SLOT_1_AXI_B_SEL_TRIG {1} \
+    CONFIG.C_SLOT_1_AXI_R_SEL_DATA {1} \
+    CONFIG.C_SLOT_1_AXI_R_SEL_TRIG {1} \
+    CONFIG.C_SLOT_1_AXI_W_SEL_DATA {1} \
+    CONFIG.C_SLOT_1_AXI_W_SEL_TRIG {1} \
+    CONFIG.C_SLOT_1_INTF_TYPE {xilinx.com:interface:aximm_rtl:1.0} \
+  ] $system_ila_0
+
+
+  # Create instance: snn_axil_0, and set properties
+  set snn_axil_0 [ create_bd_cell -type ip -vlnv user.org:user:snn_axil:1.0 snn_axil_0 ]
+
+  # Create instance: util_vector_logic_0, and set properties
+  set util_vector_logic_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.0 util_vector_logic_0 ]
+  set_property -dict [list \
+    CONFIG.C_OPERATION {not} \
+    CONFIG.C_SIZE {1} \
+  ] $util_vector_logic_0
+
+
+  # Create interface connections
+  connect_bd_intf_net -intf_net axi_uartlite_0_UART [get_bd_intf_ports usb_uart] [get_bd_intf_pins axi_uartlite_0/UART]
+connect_bd_intf_net -intf_net [get_bd_intf_nets axi_uartlite_0_UART] [get_bd_intf_ports usb_uart] [get_bd_intf_pins system_ila_0/SLOT_0_UART]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_intf_nets axi_uartlite_0_UART]
+  connect_bd_intf_net -intf_net snn_axil_0_M00_AXI [get_bd_intf_pins snn_axil_0/M00_AXI] [get_bd_intf_pins axi_uartlite_0/S_AXI]
+connect_bd_intf_net -intf_net [get_bd_intf_nets snn_axil_0_M00_AXI] [get_bd_intf_pins snn_axil_0/M00_AXI] [get_bd_intf_pins system_ila_0/SLOT_1_AXI]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_intf_nets snn_axil_0_M00_AXI]
+
   # Create port connections
-  connect_bd_net -net btnL_1  [get_bd_ports btnL] \
-  [get_bd_pins xor_gate_0/a_i]
-  connect_bd_net -net btnR_1  [get_bd_ports btnR] \
-  [get_bd_pins xor_gate_0/b_i]
-  connect_bd_net -net xor_gate_0_c_o  [get_bd_pins xor_gate_0/c_o] \
+  connect_bd_net -net Net  [get_bd_pins util_vector_logic_0/Res] \
+  [get_bd_pins axi_uartlite_0/s_axi_aresetn] \
+  [get_bd_pins system_ila_0/resetn] \
+  [get_bd_pins snn_axil_0/M00_ARESETN] \
+  [get_bd_pins system_ila_0/probe1]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets Net]
+  connect_bd_net -net clk_wiz_0_clk_out1  [get_bd_ports clk] \
+  [get_bd_pins axi_uartlite_0/s_axi_aclk] \
+  [get_bd_pins system_ila_0/clk] \
+  [get_bd_pins snn_axil_0/M00_ACLK]
+  connect_bd_net -net interrupt  [get_bd_pins axi_uartlite_0/interrupt] \
+  [get_bd_pins system_ila_0/probe0]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets interrupt]
+  connect_bd_net -net reset_1  [get_bd_ports reset] \
+  [get_bd_pins util_vector_logic_0/Op1]
+  connect_bd_net -net sw_1  [get_bd_ports sw] \
   [get_bd_ports led]
 
   # Create address segments
+  assign_bd_address -offset 0x00000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces snn_axil_0/M00_AXI] [get_bd_addr_segs axi_uartlite_0/S_AXI/Reg] -force
 
 
   # Restore current instance

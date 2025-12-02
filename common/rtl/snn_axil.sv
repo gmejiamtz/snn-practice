@@ -73,8 +73,8 @@ localparam logic [31:0] CTRL_REG_Address_lp = 32'hC;
 /////////////////////////////////////////////////////////////////
 // Internal registers and state machines
 /////////////////////////////////////////////////////////////////
-reg  [7:0]  rx_data_r;
-reg         ar_transaction_done_r;
+logic  [31:0]  rx_data_r;
+logic ar_transaction_done_r, rx_got_data_d, rx_got_data_q;
 
 typedef enum logic [1:0] { ar_status_reg_wait, ar_status_reg_send, ar_rx_fifo_wait, ar_rx_fifo_send } ar_state_t;
 typedef enum logic { aw_wait_for_slave, aw_slave_takes_awaddr } aw_state_t;
@@ -166,7 +166,7 @@ always_ff @(posedge M00_ACLK) begin
 end
 
 always_comb begin
-    M00_axi_wstrb = 4'hF;
+    M00_axi_wstrb = 4'h1;
     w_state_d = w_state_q;
     w_valid_d = w_valid_q;
     w_data_d = w_data_q;
@@ -176,13 +176,14 @@ always_comb begin
                 w_data_d = 'b0;
                 w_valid_d = 1'b0;
                 //AR has read from Rx Fifo and got something
-                if(M00_axi_rvalid & M00_axi_rready & (ar_state_q == ar_rx_fifo_send))
+                if(M00_axi_rvalid & M00_axi_rready & (ar_state_q == ar_rx_fifo_send)) begin
                     w_state_d = w_wait_for_slave;
-                    w_data_d = M00_axi_rdata;
+                end
             end
         w_wait_for_slave: begin
             w_valid_d = 1'b1;
-            if(M00_axi_wready) begin
+            w_data_d = rx_data_r;
+            if(M00_axi_wready & M00_axi_wready) begin
                 w_valid_d = 1'b0;
                 w_state_d = w_slave_takes_wdata;
             end
@@ -193,9 +194,10 @@ always_comb begin
                 w_data_d = 'b0;
                 if(!M00_axi_rvalid)
                     w_state_d = w_wait_for_data;
-                else
+                else begin
                     w_state_d = w_wait_for_slave;
-                    w_data_d = M00_axi_rdata;
+                    w_data_d = rx_data_r;
+                end
             end
         default: w_state_d = w_state_q;
     endcase
@@ -241,24 +243,30 @@ always_comb begin
     ar_addr_d = ar_addr_q;
     ar_valid_d = ar_valid_q;
     case(ar_state_q)
+        //AR reads from the Status Register
         ar_status_reg_wait:
             begin
                 ar_valid_d = 1'b1;
                 ar_addr_d = STAT_REG_Address_lp;
-                if(M00_axi_arready)
+                //When status is ready send it
+                if(M00_axi_arready & M00_axi_arvalid) begin
                     ar_state_d = ar_status_reg_send;
-                else
+                    ar_valid_d = 1'b0;
+                end
+                else begin
                     ar_state_d = ar_status_reg_wait;
+                end
             end
         ar_status_reg_send:
             begin
+                //AR has sent a valid Stat Reg address and waits to read RxFifo
                 ar_valid_d = 1'b0;
                 ar_addr_d = STAT_REG_Address_lp;
                 //if rdata[0] is high then rx fifo has something
                 if(M00_axi_rvalid & M00_axi_rdata[0]) begin
                     ar_state_d = ar_rx_fifo_wait;
                 //else if rdata[0] is low go back and reassert arvalid with stat reg addr
-                end else if (~M00_axi_rdata[0] & M00_axi_rvalid) begin
+                end else if (~M00_axi_rdata[0] & M00_axi_rvalid & M00_axi_rready) begin
                     ar_state_d = ar_status_reg_wait;
                 //else wait on rvalid by not sending a new addr
                 end else begin
@@ -267,22 +275,28 @@ always_comb begin
             end
         ar_rx_fifo_wait:
             begin
+                //AR has sent a valid RxFifo address and waits for a response
                 ar_addr_d = RxFifoAddress_lp;
                 ar_valid_d = 1'b1;
-                if(M00_axi_arready) begin
+                //If RxFifo is ready send the Rxfifo address
+                if(M00_axi_arready & M00_axi_arvalid) begin
                     ar_state_d = ar_rx_fifo_send;
+                    ar_valid_d = 1'b0;
                 end else begin
+                    //else wait
                     ar_state_d = ar_rx_fifo_wait;
                 end
             end
         ar_rx_fifo_send:
             begin
+                //rdata in this state should be rx data
                 ar_addr_d = RxFifoAddress_lp;
                 ar_valid_d = 1'b0;
-                //if rvalid is gotten then go back and read status reg again
-                if(M00_axi_rvalid) begin
+                //if rvalid is gotten then go back and read status reg again to see rxfifo status
+                if(M00_axi_rvalid & M00_axi_rready) begin
                     ar_state_d = ar_status_reg_wait;
                 end else begin
+                    //else stay
                     ar_state_d = ar_rx_fifo_send;
                 end
             end
@@ -300,7 +314,7 @@ assign M00_axi_rready = 1'b1;
 always_ff @(posedge M00_ACLK) begin
     if(!M00_ARESETN)
         rx_data_r <= 32'h00;
-    else if(M00_axi_rvalid & M00_axi_rready)
+    else if(M00_axi_rvalid & M00_axi_rready & (ar_rx_fifo_send == ar_state_q))
         rx_data_r <= {24'h0, M00_axi_rdata[7:0]};
 end
 

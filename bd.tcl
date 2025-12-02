@@ -205,7 +205,7 @@ proc create_root_design { parentCell } {
   set_property -dict [ list \
    CONFIG.POLARITY {ACTIVE_HIGH} \
  ] $reset
-  set clk [ create_bd_port -dir I -type clk -freq_hz 40000000 clk ]
+  set clk [ create_bd_port -dir I -type clk -freq_hz 100000000 clk ]
   set sw [ create_bd_port -dir I -from 15 -to 0 -type data sw ]
   set led [ create_bd_port -dir O -from 15 -to 0 led ]
 
@@ -287,7 +287,6 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets snn_axil_0_M00_AXI] [get_bd_intf
   # Restore current instance
   current_bd_instance $oldCurInst
 
-  validate_bd_design
   save_bd_design
 }
 # End of create_root_design()
@@ -299,4 +298,6 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets snn_axil_0_M00_AXI] [get_bd_intf
 
 create_root_design ""
 
+
+common::send_gid_msg -ssname BD::TCL -id 2053 -severity "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
 

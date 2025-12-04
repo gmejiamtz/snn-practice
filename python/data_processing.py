@@ -72,6 +72,42 @@ def plot_hdf5_timeseries(file_path, group_name, dataset_x, dataset_y):
         plt.grid(True)
         plt.show()
 
+def save_hdf5_group_arrays(file_path, group_name, save_dir="saved_arrays"):
+    """
+    Save all datasets in a given HDF5 group to separate .npy files.
+    
+    Args:
+        file_path (str): Path to the HDF5 file
+        group_name (str): Name of the group to save, e.g. 'events'
+        save_dir (str): Directory where .npy files will be saved
+    """
+    import os
+    os.makedirs(save_dir, exist_ok=True)
+    
+    with h5py.File(file_path, 'r') as f:
+        group = f[group_name]
+        for dataset_name, dataset in group.items():
+            data_array = dataset[:]
+            save_path = os.path.join(save_dir, f"{group_name}_{dataset_name}.npy")
+            np.save(save_path, data_array)
+            print(f"Saved {group_name}/{dataset_name} -> {save_path}")
+
+def count_true_in_array(arr: np.ndarray) -> int:
+    """
+    Count how many True values are in a numpy boolean array.
+
+    Args:
+        arr (np.ndarray): Input array (expected dtype=bool)
+
+    Returns:
+        int: Number of True entries
+    """
+    if arr.dtype != np.bool_:
+        print("Warning: array is not boolean, converting to bool.")
+        arr = arr.astype(bool)
+    
+    return np.count_nonzero(arr)
+
 if __name__ == "__main__":
     unzip_all(ZIP_DIR, EXTRACT_DIR)
     file_path = "extracted_data/sr_dataset_gt/sr_dataset_h5/1.h5"
@@ -82,4 +118,39 @@ if __name__ == "__main__":
     plot_hdf5_timeseries(file_path, "position_OT", "ts", ["x", "y", "z"])
     plot_hdf5_timeseries(file_path, "vel_imu", "ts", ["x", "y", "z"])
     plot_hdf5_timeseries(file_path, "vel_over_height_imu", "ts", ["x", "y", "z"])
-
+    save_hdf5_group_arrays(file_path, "events", save_dir="saved_arrays")
+    save_hdf5_group_arrays(file_path, "Euler_imu", save_dir="saved_arrays")
+    save_hdf5_group_arrays(file_path, "angular_rate_imu", save_dir="saved_arrays")
+    save_hdf5_group_arrays(file_path, "gyro_static_unbiased", save_dir="saved_arrays")
+    save_hdf5_group_arrays(file_path, "position_OT", save_dir="saved_arrays")
+    save_hdf5_group_arrays(file_path, "vel_imu", save_dir="saved_arrays")
+    save_hdf5_group_arrays(file_path, "vel_over_height_imu", save_dir="saved_arrays")
+    ps = np.load("saved_arrays/events_ps.npy")
+    xs = np.load("saved_arrays/events_xs.npy")
+    ys = np.load("saved_arrays/events_ys.npy")
+    ts = np.load("saved_arrays/events_ts.npy")
+    true_count = count_true_in_array(ps)
+    print("True events:", true_count)
+    # Show first 1000 spikes as an image
+    #plt.scatter(xs[:1000], ys[:1000], c=ps[:1000], cmap='gray')
+    #plt.gca().invert_yaxis()
+    #plt.show()
+    dt = np.diff(ts)
+    # Find first non-zero time difference
+    #first_valid_index = np.where(dt > 0)[0][0] + 1
+    #print("First valid time increment occurs at index:", first_valid_index)
+    #print("Time difference at that point:", dt[first_valid_index-1])
+    first_spike_ts = ts[3]
+    print("events_ps",ps[:10])
+    print("events_ts",ts[:10])
+    print("events_xs",xs[:10])
+    print("events_ys",ys[:10])
+    ts = np.load("saved_arrays/vel_imu_ts.npy")
+    xs = np.load("saved_arrays/vel_imu_x.npy")
+    ys = np.load("saved_arrays/vel_imu_y.npy")
+    zs = np.load("saved_arrays/vel_imu_z.npy")
+    print("vel_imu_ts",ts[:10])
+    print("vel_imu_x",xs[:10])
+    print("vel_imu_y",ys[:10])
+    print("vel_imu_z",zs[:10])
+    print(first_spike_ts == ts[0])

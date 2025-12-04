@@ -14,6 +14,7 @@ add_files -norecurse ./common/rtl/lif_neuron.sv
 add_files -norecurse ./common/rtl/spiking_neural_net.sv
 add_files -fileset constrs_1 -norecurse ./common/contraints/Basys-3-Master.xdc
 add_files -fileset sim_1 -norecurse ./common/sim/tb_snn_axil.sv
+add_files -fileset sim_1 -norecurse ./common/sim/tb_lif_neuron.sv
 
 update_compile_order -fileset sources_1
 

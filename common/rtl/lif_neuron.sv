@@ -22,10 +22,9 @@ module lif_neuron #(
     always_comb begin : spiking_logic
         state_d = state_q;  //default to state being held
         spk_o = 0;
-        valid_o = 0;
+        valid_o = valid_i;
         if(valid_i) begin
             spk_o = (state_q >= threshold_p);
-            valid_o = 1;
             if(spk_o) begin
                 state_d = '0;
             end else begin

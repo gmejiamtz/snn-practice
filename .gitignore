@@ -1,8 +1,10 @@
 # Downloaded Data
+python/__pycache__
 python/extracted_data
 python/downloaded_data
-python/__pycache__
 python/saved_arrays
+python/bram_weights
+python/bram_weights/hexfiles
 
 # Vivado project files
 snn-practice-xc7a35tcpg236-1

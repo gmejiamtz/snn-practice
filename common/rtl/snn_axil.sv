@@ -318,4 +318,13 @@ always_ff @(posedge M00_ACLK) begin
         rx_data_r <= {24'h0, M00_axi_rdata[7:0]};
 end
 
+// Spiking Neural Net
+
+spiking_neural_net snn_inst (
+    .clk_i(clk_i),
+    .resetn_i(resetn_i),
+    .valid_i(M00_axi_rvalid), //will change with an internal fsm
+    
+);
+
 endmodule

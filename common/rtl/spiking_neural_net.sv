@@ -1,4 +1,44 @@
-module spiking_neural_net (
+module spiking_neural_net #(
+    parameter integer weight_hidden_p = 6,
+    parameter integer weight_output_p = 32,
+    //has -1.0, -0.5, 0.0, 0.25, 0.5, 1.0
+    parameter string weights_hidden_neuron_1_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_2_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_3_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_4_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_5_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_6_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_7_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_8_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_9_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_10_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_11_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_12_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_13_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_14_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_15_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_16_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_17_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_18_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_19_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_20_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_21_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_22_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_23_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_24_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_25_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_26_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_27_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_28_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_29_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_30_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_31_p = "../util/test.hex",
+    parameter string weights_hidden_neuron_32_p = "../util/test.hex",
+    //output neuron hexfiles
+    parameter string weights_output_neuron_1_p = "../util/test.hex",
+    parameter string weights_output_neuron_2_p = "../util/test.hex",
+    parameter string weights_output_neuron_3_p = "../util/test.hex"
+    )(
     input clk_i,
     input resetn_i,
     input valid_i,
@@ -31,6 +71,44 @@ logic [31:0] hidden_layer_valid_o;
 logic [31:0] output_layer_current [2:0];
 logic [0:0] output_layer_valid_i;
 logic [2:0] output_layer_valid_o;
+
+//BRAM memories
+
+logic [31:0] hidden_neuron_1_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_2_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_3_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_4_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_5_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_6_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_7_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_8_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_9_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_10_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_11_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_12_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_13_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_14_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_15_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_16_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_17_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_18_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_19_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_20_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_21_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_22_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_23_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_24_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_25_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_26_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_27_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_28_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_29_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_30_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_31_weights [0:weight_hidden_p-1];
+logic [31:0] hidden_neuron_32_weights [0:weight_hidden_p-1];
+logic [31:0] output_neuron_1_weights [0:weight_output_p-1];
+logic [31:0] output_neuron_2_weights [0:weight_output_p-1];
+logic [31:0] output_neuron_3_weights [0:weight_output_p-1];
 
 // Euler IMU Neurons
 
@@ -141,12 +219,6 @@ lif_neuron input_position_zn (
 assign hidden_layer_valid_i = &input_layer_valid_o;
 
 //hidden layer calculations
-
-always_comb begin : hidden_layer_current_calculation
-    for(integer i = 0; i < 64; i++;) begin
-        hidden_layer_current[i] = 
-    end
-end
 
 genvar hidden_neuron;
 generate

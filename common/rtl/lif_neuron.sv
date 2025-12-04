@@ -10,6 +10,10 @@ module lif_neuron #(
 );
 
     logic [31:0] state_d, state_q;
+    logic [31:0] weight [0:weight_num_p-1];
+    initial begin
+        $readmemh(weight_hexfile_p,weight);
+    end
 
     always @(posedge clk_i) begin
         if(!resetn_i) begin

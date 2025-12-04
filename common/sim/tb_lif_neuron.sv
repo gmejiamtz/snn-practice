@@ -10,7 +10,9 @@ module tb_lif_neuron;
     reg valid_o;
     reg spk_o;
     int error;
-    lif_neuron dut (
+    lif_neuron #(
+      .weight_hexfile_p("/home/gary/Documents/snn-practice/common/util/test.hex")
+    ) dut(
         .clk_i(clk),
         .resetn_i(resetn),
         .current_i(current_i),

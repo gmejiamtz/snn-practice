@@ -42,32 +42,35 @@ module spiking_neural_net #(
     input clk_i,
     input resetn_i,
     input valid_i,
+    output ready_o,
 
     //input currents
     input [31:0] euler_imu_x,
     input [31:0] euler_imu_y,
     input [31:0] euler_imu_z,
-
     input [31:0] position_x,
     input [31:0] position_y,
     input [31:0] position_z,
-    
 
     //output spikes
     output vel_imu_xp,
     output vel_imu_xn,
     output vel_imu_yp,
 
-
+    input ready_i,
     output valid_o
 );
 
-logic [3:0] input_layer_spikes;
-logic [3:0] input_layer_valid_o;
-logic [31:0] hidden_layer_current [31:0];
+logic [2:0] input_layer_spikes;
+logic [2:0] input_layer_valid_o;
+logic [2:0] input_layer_ready_i;
+logic [2:0] input_layer_valid_i;
+logic [2:0] input_layer_ready_o;
 logic [31:0] hidden_layer_spikes;
 logic [0:0] hidden_layer_valid_i;
-logic [31:0] hidden_layer_valid_o;
+logic [0:0] hidden_layer_ready_i;
+logic [0:0] hidden_layer_valid_o;
+logic [0:0] hidden_layer_ready_o;
 logic [31:0] output_layer_current [2:0];
 logic [0:0] output_layer_valid_i;
 logic [2:0] output_layer_valid_o;
@@ -110,7 +113,46 @@ logic [31:0] output_neuron_1_weights [0:weight_output_p-1];
 logic [31:0] output_neuron_2_weights [0:weight_output_p-1];
 logic [31:0] output_neuron_3_weights [0:weight_output_p-1];
 
-// Euler IMU Neurons
+//Weight Memories
+initial begin
+    $readmemh(weights_hidden_neuron_1_p, hidden_neuron_1_weights);
+    $readmemh(weights_hidden_neuron_2_p, hidden_neuron_2_weights);
+    $readmemh(weights_hidden_neuron_3_p, hidden_neuron_3_weights);
+    $readmemh(weights_hidden_neuron_4_p, hidden_neuron_4_weights);
+    $readmemh(weights_hidden_neuron_5_p, hidden_neuron_5_weights);
+    $readmemh(weights_hidden_neuron_6_p, hidden_neuron_6_weights);
+    $readmemh(weights_hidden_neuron_7_p, hidden_neuron_7_weights);
+    $readmemh(weights_hidden_neuron_8_p, hidden_neuron_8_weights);
+    $readmemh(weights_hidden_neuron_9_p, hidden_neuron_9_weights);
+    $readmemh(weights_hidden_neuron_10_p, hidden_neuron_10_weights);
+    $readmemh(weights_hidden_neuron_11_p, hidden_neuron_11_weights);
+    $readmemh(weights_hidden_neuron_12_p, hidden_neuron_12_weights);
+    $readmemh(weights_hidden_neuron_13_p, hidden_neuron_13_weights);
+    $readmemh(weights_hidden_neuron_14_p, hidden_neuron_14_weights);
+    $readmemh(weights_hidden_neuron_15_p, hidden_neuron_15_weights);
+    $readmemh(weights_hidden_neuron_16_p, hidden_neuron_16_weights);
+    $readmemh(weights_hidden_neuron_17_p, hidden_neuron_17_weights);
+    $readmemh(weights_hidden_neuron_18_p, hidden_neuron_18_weights);
+    $readmemh(weights_hidden_neuron_19_p, hidden_neuron_19_weights);
+    $readmemh(weights_hidden_neuron_20_p, hidden_neuron_20_weights);
+    $readmemh(weights_hidden_neuron_21_p, hidden_neuron_21_weights);
+    $readmemh(weights_hidden_neuron_22_p, hidden_neuron_22_weights);
+    $readmemh(weights_hidden_neuron_23_p, hidden_neuron_23_weights);
+    $readmemh(weights_hidden_neuron_24_p, hidden_neuron_24_weights);
+    $readmemh(weights_hidden_neuron_25_p, hidden_neuron_25_weights);
+    $readmemh(weights_hidden_neuron_26_p, hidden_neuron_26_weights);
+    $readmemh(weights_hidden_neuron_27_p, hidden_neuron_27_weights);
+    $readmemh(weights_hidden_neuron_28_p, hidden_neuron_28_weights);
+    $readmemh(weights_hidden_neuron_29_p, hidden_neuron_29_weights);
+    $readmemh(weights_hidden_neuron_30_p, hidden_neuron_30_weights);
+    $readmemh(weights_hidden_neuron_31_p, hidden_neuron_31_weights);
+    $readmemh(weights_hidden_neuron_32_p, hidden_neuron_32_weights);
+    $readmemh(weights_output_neuron_1_p, output_neuron_1_weights);
+    $readmemh(weights_output_neuron_2_p, output_neuron_2_weights);
+    $readmemh(weights_output_neuron_3_p, output_neuron_3_weights);
+end
+
+// Euler IMU Neurons - Input Layer neurons are just LIFs with no acc units
 
 lif_neuron input_lif_euler_imu_xp (
     .clk_i(clk_i),

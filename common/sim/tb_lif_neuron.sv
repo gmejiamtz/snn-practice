@@ -8,17 +8,19 @@ module tb_lif_neuron;
     reg [31:0] current_i;
     reg valid_i;
     reg valid_o;
+    reg ready_i;
+    reg ready_o;
     reg spk_o;
     int error;
-    lif_neuron #(
-      .weight_hexfile_p("/home/gary/Documents/snn-practice/common/util/test.hex")
-    ) dut(
+    lif_neuron dut(
         .clk_i(clk),
         .resetn_i(resetn),
         .current_i(current_i),
         .valid_i(valid_i),
+        .ready_o(ready_o),
         .spk_o(spk_o),
-        .valid_o(valid_o)
+        .valid_o(valid_o),
+        .ready_i(ready_i)
     );
 
     // Clock generation: 10ns period
@@ -30,7 +32,8 @@ module tb_lif_neuron;
     task reset_dut(); begin
         resetn = 0;
         error = 0;
-        valid_i = 1;
+        valid_i = 0;
+        ready_i = 0;
         current_i = '0;
         repeat (10) begin
             @(posedge clk);
@@ -44,7 +47,10 @@ module tb_lif_neuron;
     task send_current(input logic[31:0] current); begin
         @(negedge clk);
         current_i = current;
+        valid_i = 1;
         @(posedge clk);
+        @(negedge clk);
+        valid_i = 0;
     end
     endtask
     
@@ -55,23 +61,16 @@ module tb_lif_neuron;
     end
     endtask
     
-    task run_neuron(); begin
-        valid_i = 1;
-    end
-    endtask
-    
-    task stall_neuron(); begin
-        valid_i = 0;
-    end
-    endtask
-    
-    task check_spike(input logic spike_status); begin
-        @(negedge clk);
-        if(spike_status != spk_o) begin
-            error++;
-            $display("Spike Status %b did not match LIF status %b | error count: %d", spike_status,spk_o,error);
+    task read_neuron(); begin
+        if(valid_o) begin
+            @(negedge clk);
+            ready_i = 1;
+            @(posedge clk);
+            $display("At time: %d | Spike Status: %b",$time, spk_o);
+            @(negedge clk);
+            ready_i = 0;
         end else begin
-            $display("Correct Spike Behavior!");
+            $display("Not valid data yer");
         end
     end
     endtask
@@ -80,27 +79,62 @@ module tb_lif_neuron;
     initial begin
         reset_dut();
         send_current(32'd100);
-        check_spike(1'b0);
+        read_neuron();
+        send_current(32'd00);
+        read_neuron();
+        send_current(32'd00);
+        read_neuron();
+        send_current(32'd00);
+        read_neuron();
+        send_current(32'd00);
+        read_neuron();
+        send_current(32'd00);
+        read_neuron();
+        send_current(32'd00);
+        read_neuron();
+        send_current(32'd00);
+        read_neuron();
+        send_current(32'd00);
+        read_neuron();
+        send_current(32'd00);
+        read_neuron();
+        send_current(32'd00);
+        read_neuron();
+        send_current(32'd00);
+        read_neuron();
+        send_current(32'd00);
+        read_neuron();
+        send_current(32'd00);
+        read_neuron();
         wait_cycles(5);
-        stall_neuron();
         send_current(32'd4351);
-        check_spike(1'b0);
-        run_neuron();
+        read_neuron();
         send_current(32'd51);
+        read_neuron();
         send_current(32'd401);
+        read_neuron();
         send_current(32'd900);
+        read_neuron();
         send_current(32'd1500);
+        read_neuron();
         send_current(32'd1987);
+        read_neuron();
         send_current(32'd1500);
+        read_neuron();
         send_current(32'd1500);
+        read_neuron();
         send_current(32'd1500);
+        read_neuron();
         wait_cycles(3);
         send_current(32'd0);
         wait_cycles(10);
+        read_neuron();
         send_current(32'd10000);
         wait_cycles(200);
+        read_neuron();
+        wait_cycles(3);
+        $display("Sim over");
         $finish;
     end
 
 endmodule
-

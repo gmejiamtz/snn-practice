@@ -13,5 +13,7 @@ vivado*
 ip_repo
 
 # Webpage
-
 docs/*.html
+
+# IDE
+.vscode

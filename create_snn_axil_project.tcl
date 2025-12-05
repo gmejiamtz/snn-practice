@@ -11,10 +11,14 @@ set_property board_part digilentinc.com:basys3:part0:1.2 [current_project]
 # they must be verilog files for some reason, not .sv.
 add_files -norecurse ./common/rtl/snn_axil.sv
 add_files -norecurse ./common/rtl/lif_neuron.sv
+add_files -norecurse ./common/rtl/lif.sv
+add_files -norecurse ./common/rtl/current_acc.sv
 add_files -norecurse ./common/rtl/spiking_neural_net.sv
 add_files -fileset constrs_1 -norecurse ./common/contraints/Basys-3-Master.xdc
 add_files -fileset sim_1 -norecurse ./common/sim/tb_snn_axil.sv
 add_files -fileset sim_1 -norecurse ./common/sim/tb_lif_neuron.sv
+add_files -fileset sim_1 -norecurse ./common/sim/tb_current_acc.sv
+add_files -fileset sim_1 -norecurse ./common/sim/tb_lif_acc.sv
 
 update_compile_order -fileset sources_1
 

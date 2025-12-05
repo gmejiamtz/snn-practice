@@ -19,6 +19,7 @@ add_files -fileset sim_1 -norecurse ./common/sim/tb_snn_axil.sv
 add_files -fileset sim_1 -norecurse ./common/sim/tb_lif_neuron.sv
 add_files -fileset sim_1 -norecurse ./common/sim/tb_current_acc.sv
 add_files -fileset sim_1 -norecurse ./common/sim/tb_lif_acc.sv
+add_files -fileset sim_1 -norecurse ./common/sim/tb_spiking_neural_net.sv
 
 update_compile_order -fileset sources_1
 

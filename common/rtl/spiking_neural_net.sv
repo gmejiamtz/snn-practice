@@ -35,9 +35,9 @@ module spiking_neural_net #(
     parameter string weights_hidden_neuron_31_p = "../util/test.hex",
     parameter string weights_hidden_neuron_32_p = "../util/test.hex",
     //output neuron hexfiles
-    parameter string weights_output_neuron_1_p = "../util/test.hex",
-    parameter string weights_output_neuron_2_p = "../util/test.hex",
-    parameter string weights_output_neuron_3_p = "../util/test.hex"
+    parameter string weights_output_neuron_1_p = "../util/test1.hex",
+    parameter string weights_output_neuron_2_p = "../util/test1.hex",
+    parameter string weights_output_neuron_3_p = "../util/test1.hex"
     )(
     input clk_i,
     input resetn_i,
@@ -74,13 +74,14 @@ logic [31:0] hidden_layer_ready_i;
 logic [31:0] hidden_layer_valid_o;
 logic [31:0] hidden_layer_ready_o;
 //output layer inferace
-logic [2:0] input_layer_spikes;
 logic [2:0] output_layer_valid_i;
 logic [2:0] output_layer_valid_o;
 logic [2:0] output_layer_ready_i;
 logic [2:0] output_layer_ready_o;
 
 // Euler IMU Neurons - Input Layer neurons are just LIFs with no acc units
+
+assign input_layer_valid_i = {6{valid_i}};
 
 lif_neuron input_lif_euler_imu_x (
     .clk_i(clk_i),
@@ -164,7 +165,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[0]),
     .ready_o(hidden_layer_ready_o[0]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[0]),
+    .spike_o(hidden_layer_spikes[0]),
     .ready_i(hidden_layer_ready_i[0]),
     .valid_o(hidden_layer_valid_o[0])
 );
@@ -178,7 +179,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[1]),
     .ready_o(hidden_layer_ready_o[1]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[1]),
+    .spike_o(hidden_layer_spikes[1]),
     .ready_i(hidden_layer_ready_i[1]),
     .valid_o(hidden_layer_valid_o[1])
 );
@@ -192,7 +193,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[2]),
     .ready_o(hidden_layer_ready_o[2]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[2]),
+    .spike_o(hidden_layer_spikes[2]),
     .ready_i(hidden_layer_ready_i[2]),
     .valid_o(hidden_layer_valid_o[2])
 );
@@ -206,7 +207,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[3]),
     .ready_o(hidden_layer_ready_o[3]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[3]),
+    .spike_o(hidden_layer_spikes[3]),
     .ready_i(hidden_layer_ready_i[3]),
     .valid_o(hidden_layer_valid_o[3])
 );
@@ -220,7 +221,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[4]),
     .ready_o(hidden_layer_ready_o[4]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[4]),
+    .spike_o(hidden_layer_spikes[4]),
     .ready_i(hidden_layer_ready_i[4]),
     .valid_o(hidden_layer_valid_o[4])
 );
@@ -234,7 +235,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[5]),
     .ready_o(hidden_layer_ready_o[5]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[5]),
+    .spike_o(hidden_layer_spikes[5]),
     .ready_i(hidden_layer_ready_i[5]),
     .valid_o(hidden_layer_valid_o[5])
 );
@@ -248,7 +249,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[6]),
     .ready_o(hidden_layer_ready_o[6]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[6]),
+    .spike_o(hidden_layer_spikes[6]),
     .ready_i(hidden_layer_ready_i[6]),
     .valid_o(hidden_layer_valid_o[6])
 );
@@ -262,7 +263,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[7]),
     .ready_o(hidden_layer_ready_o[7]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[7]),
+    .spike_o(hidden_layer_spikes[7]),
     .ready_i(hidden_layer_ready_i[7]),
     .valid_o(hidden_layer_valid_o[7])
 );
@@ -276,7 +277,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[8]),
     .ready_o(hidden_layer_ready_o[8]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[8]),
+    .spike_o(hidden_layer_spikes[8]),
     .ready_i(hidden_layer_ready_i[8]),
     .valid_o(hidden_layer_valid_o[8])
 );
@@ -290,7 +291,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[9]),
     .ready_o(hidden_layer_ready_o[9]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[9]),
+    .spike_o(hidden_layer_spikes[9]),
     .ready_i(hidden_layer_ready_i[9]),
     .valid_o(hidden_layer_valid_o[9])
 );
@@ -304,7 +305,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[10]),
     .ready_o(hidden_layer_ready_o[10]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[10]),
+    .spike_o(hidden_layer_spikes[10]),
     .ready_i(hidden_layer_ready_i[10]),
     .valid_o(hidden_layer_valid_o[10])
 );
@@ -318,7 +319,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[11]),
     .ready_o(hidden_layer_ready_o[11]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[11]),
+    .spike_o(hidden_layer_spikes[11]),
     .ready_i(hidden_layer_ready_i[11]),
     .valid_o(hidden_layer_valid_o[11])
 );
@@ -332,7 +333,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[12]),
     .ready_o(hidden_layer_ready_o[12]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[12]),
+    .spike_o(hidden_layer_spikes[12]),
     .ready_i(hidden_layer_ready_i[12]),
     .valid_o(hidden_layer_valid_o[12])
 );
@@ -346,7 +347,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[13]),
     .ready_o(hidden_layer_ready_o[13]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[13]),
+    .spike_o(hidden_layer_spikes[13]),
     .ready_i(hidden_layer_ready_i[13]),
     .valid_o(hidden_layer_valid_o[13])
 );
@@ -360,7 +361,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[14]),
     .ready_o(hidden_layer_ready_o[14]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[14]),
+    .spike_o(hidden_layer_spikes[14]),
     .ready_i(hidden_layer_ready_i[14]),
     .valid_o(hidden_layer_valid_o[14])
 );
@@ -374,7 +375,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[15]),
     .ready_o(hidden_layer_ready_o[15]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[15]),
+    .spike_o(hidden_layer_spikes[15]),
     .ready_i(hidden_layer_ready_i[15]),
     .valid_o(hidden_layer_valid_o[15])
 );
@@ -388,7 +389,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[16]),
     .ready_o(hidden_layer_ready_o[16]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[16]),
+    .spike_o(hidden_layer_spikes[16]),
     .ready_i(hidden_layer_ready_i[16]),
     .valid_o(hidden_layer_valid_o[16])
 );
@@ -402,7 +403,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[17]),
     .ready_o(hidden_layer_ready_o[17]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[17]),
+    .spike_o(hidden_layer_spikes[17]),
     .ready_i(hidden_layer_ready_i[17]),
     .valid_o(hidden_layer_valid_o[17])
 );
@@ -416,7 +417,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[18]),
     .ready_o(hidden_layer_ready_o[18]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[18]),
+    .spike_o(hidden_layer_spikes[18]),
     .ready_i(hidden_layer_ready_i[18]),
     .valid_o(hidden_layer_valid_o[18])
 );
@@ -430,7 +431,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[19]),
     .ready_o(hidden_layer_ready_o[19]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[19]),
+    .spike_o(hidden_layer_spikes[19]),
     .ready_i(hidden_layer_ready_i[19]),
     .valid_o(hidden_layer_valid_o[19])
 );
@@ -444,7 +445,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[20]),
     .ready_o(hidden_layer_ready_o[20]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[20]),
+    .spike_o(hidden_layer_spikes[20]),
     .ready_i(hidden_layer_ready_i[20]),
     .valid_o(hidden_layer_valid_o[20])
 );
@@ -458,7 +459,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[21]),
     .ready_o(hidden_layer_ready_o[21]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[21]),
+    .spike_o(hidden_layer_spikes[21]),
     .ready_i(hidden_layer_ready_i[21]),
     .valid_o(hidden_layer_valid_o[21])
 );
@@ -472,7 +473,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[22]),
     .ready_o(hidden_layer_ready_o[22]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[22]),
+    .spike_o(hidden_layer_spikes[22]),
     .ready_i(hidden_layer_ready_i[22]),
     .valid_o(hidden_layer_valid_o[22])
 );
@@ -486,7 +487,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[23]),
     .ready_o(hidden_layer_ready_o[23]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[23]),
+    .spike_o(hidden_layer_spikes[23]),
     .ready_i(hidden_layer_ready_i[23]),
     .valid_o(hidden_layer_valid_o[23])
 );
@@ -500,7 +501,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[24]),
     .ready_o(hidden_layer_ready_o[24]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[24]),
+    .spike_o(hidden_layer_spikes[24]),
     .ready_i(hidden_layer_ready_i[24]),
     .valid_o(hidden_layer_valid_o[24])
 );
@@ -514,7 +515,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[25]),
     .ready_o(hidden_layer_ready_o[25]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[25]),
+    .spike_o(hidden_layer_spikes[25]),
     .ready_i(hidden_layer_ready_i[25]),
     .valid_o(hidden_layer_valid_o[25])
 );
@@ -528,7 +529,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[26]),
     .ready_o(hidden_layer_ready_o[26]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[26]),
+    .spike_o(hidden_layer_spikes[26]),
     .ready_i(hidden_layer_ready_i[26]),
     .valid_o(hidden_layer_valid_o[26])
 );
@@ -542,7 +543,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[27]),
     .ready_o(hidden_layer_ready_o[27]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[27]),
+    .spike_o(hidden_layer_spikes[27]),
     .ready_i(hidden_layer_ready_i[27]),
     .valid_o(hidden_layer_valid_o[27])
 );
@@ -556,7 +557,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[28]),
     .ready_o(hidden_layer_ready_o[28]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[28]),
+    .spike_o(hidden_layer_spikes[28]),
     .ready_i(hidden_layer_ready_i[28]),
     .valid_o(hidden_layer_valid_o[28])
 );
@@ -570,7 +571,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[29]),
     .ready_o(hidden_layer_ready_o[29]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[29]),
+    .spike_o(hidden_layer_spikes[29]),
     .ready_i(hidden_layer_ready_i[29]),
     .valid_o(hidden_layer_valid_o[29])
 );
@@ -584,7 +585,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[30]),
     .ready_o(hidden_layer_ready_o[30]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[30]),
+    .spike_o(hidden_layer_spikes[30]),
     .ready_i(hidden_layer_ready_i[30]),
     .valid_o(hidden_layer_valid_o[30])
 );
@@ -598,7 +599,7 @@ lif #(
     .valid_i(hidden_layer_valid_i[31]),
     .ready_o(hidden_layer_ready_o[31]),
     .spikes_i(input_layer_spikes),
-    .spk_o(hidden_layer_spikes[31]),
+    .spike_o(hidden_layer_spikes[31]),
     .ready_i(hidden_layer_ready_i[31]),
     .valid_o(hidden_layer_valid_o[31])
 );
@@ -606,7 +607,9 @@ lif #(
 assign hidden_layer_ready_i = {32{&output_layer_ready_o}};
 assign output_layer_valid_i = {3{&hidden_layer_valid_o}};
 
-// Velocity IMU Neurons
+// Velocity IMU Neurons - ouput layer
+
+assign output_layer_ready_i = {3{ready_i}};
 
 lif #(
     .weight_num_p(weight_output_p),
@@ -617,7 +620,7 @@ lif #(
     .spikes_i(hidden_layer_spikes),
     .valid_i(output_layer_valid_i[0]),
     .ready_o(output_layer_ready_o[0]),
-    .spk_o(vel_imu_x),
+    .spike_o(vel_imu_x),
     .ready_i(output_layer_ready_i[0]),
     .valid_o(output_layer_valid_o[0])
 );
@@ -631,7 +634,7 @@ lif #(
     .valid_i(output_layer_valid_i[1]),
     .ready_o(output_layer_ready_o[1]),
     .spikes_i(hidden_layer_spikes),
-    .spk_o(vel_imu_y),
+    .spike_o(vel_imu_y),
     .ready_i(output_layer_ready_i[1]),
     .valid_o(output_layer_valid_o[1])
 );
@@ -645,7 +648,7 @@ lif #(
     .valid_i(output_layer_valid_i[2]),
     .ready_o(output_layer_ready_o[2]),
     .spikes_i(hidden_layer_spikes),
-    .spk_o(vel_imu_z),
+    .spike_o(vel_imu_z),
     .ready_i(output_layer_ready_i[2]),
     .valid_o(output_layer_valid_o[2])
 );

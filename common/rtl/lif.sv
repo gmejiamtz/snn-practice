@@ -17,10 +17,11 @@ logic neuron_ready_o, neuron_valid_o, neuron_ready_i, neuron_valid_i;
 logic [31:0] current_o;
 
 current_acc #(
-    .weight_hexfile_p("/home/gary/Documents/snn-practice/common/util/test.hex")
+    .weight_num_p(weight_num_p),
+    .weight_hexfile_p(weight_hexfile_p)
 ) acc_inst(
         .clk_i(clk_i),
-        .resetn_i(reset_i),
+        .resetn_i(resetn_i),
         .valid_i(acc_valid_i),
         .ready_o(acc_ready_o),
         .spikes_i(spikes_i),

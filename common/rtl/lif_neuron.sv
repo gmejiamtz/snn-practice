@@ -1,9 +1,9 @@
 module lif_neuron #(
-    parameter logic [31:0] threshold_p = 32'd2000
+    parameter logic [31:0] threshold_p = 32'd65536
     )(
     input wire          clk_i,
     input wire          resetn_i,
-    input wire          valid_i,      //controlled by the user - should be tied high normally
+    input wire          valid_i,
     output logic        ready_o,
     input logic [31:0]  current_i,
     output logic        spk_o,

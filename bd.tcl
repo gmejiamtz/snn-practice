@@ -246,6 +246,44 @@ proc create_root_design { parentCell } {
 
   # Create instance: snn_axil_0, and set properties
   set snn_axil_0 [ create_bd_cell -type ip -vlnv user.org:user:snn_axil:1.0 snn_axil_0 ]
+  set_property -dict [list \
+    CONFIG.hidden_weight_hexfile_10_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_10.hex} \
+    CONFIG.hidden_weight_hexfile_11_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_11.hex} \
+    CONFIG.hidden_weight_hexfile_12_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_12.hex} \
+    CONFIG.hidden_weight_hexfile_13_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_13.hex} \
+    CONFIG.hidden_weight_hexfile_14_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_14.hex} \
+    CONFIG.hidden_weight_hexfile_15_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_15.hex} \
+    CONFIG.hidden_weight_hexfile_16_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_16.hex} \
+    CONFIG.hidden_weight_hexfile_17_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_17.hex} \
+    CONFIG.hidden_weight_hexfile_18_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_18.hex} \
+    CONFIG.hidden_weight_hexfile_19_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_19.hex} \
+    CONFIG.hidden_weight_hexfile_1_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_1.hex} \
+    CONFIG.hidden_weight_hexfile_20_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_20.hex} \
+    CONFIG.hidden_weight_hexfile_21_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_21.hex} \
+    CONFIG.hidden_weight_hexfile_22_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_22.hex} \
+    CONFIG.hidden_weight_hexfile_23_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_23.hex} \
+    CONFIG.hidden_weight_hexfile_24_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_24.hex} \
+    CONFIG.hidden_weight_hexfile_25_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_25.hex} \
+    CONFIG.hidden_weight_hexfile_26_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_26.hex} \
+    CONFIG.hidden_weight_hexfile_27_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_27.hex} \
+    CONFIG.hidden_weight_hexfile_28_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_28.hex} \
+    CONFIG.hidden_weight_hexfile_29_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_29.hex} \
+    CONFIG.hidden_weight_hexfile_2_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_2.hex} \
+    CONFIG.hidden_weight_hexfile_30_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_30.hex} \
+    CONFIG.hidden_weight_hexfile_31_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_31.hex} \
+    CONFIG.hidden_weight_hexfile_32_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_32.hex} \
+    CONFIG.hidden_weight_hexfile_3_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_3.hex} \
+    CONFIG.hidden_weight_hexfile_4_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_4.hex} \
+    CONFIG.hidden_weight_hexfile_5_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_5.hex} \
+    CONFIG.hidden_weight_hexfile_6_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_6.hex} \
+    CONFIG.hidden_weight_hexfile_7_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_7.hex} \
+    CONFIG.hidden_weight_hexfile_8_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_8.hex} \
+    CONFIG.hidden_weight_hexfile_9_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_9.hex} \
+    CONFIG.output_weight_hexfile_1_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/output_neuron_1.hex} \
+    CONFIG.output_weight_hexfile_2_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/output_neuron_2.hex} \
+    CONFIG.output_weight_hexfile_3_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/output_neuron_3.hex} \
+  ] $snn_axil_0
+
 
   # Create instance: util_vector_logic_0, and set properties
   set util_vector_logic_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.0 util_vector_logic_0 ]
@@ -257,7 +295,7 @@ proc create_root_design { parentCell } {
 
   # Create instance: axi_interconnect_0, and set properties
   set axi_interconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_interconnect_0 ]
-  set_property CONFIG.NUM_MI {4} $axi_interconnect_0
+  set_property CONFIG.NUM_MI {2} $axi_interconnect_0
 
 
   # Create instance: axi_bram_ctrl_0, and set properties
@@ -273,40 +311,10 @@ proc create_root_design { parentCell } {
   set_property CONFIG.use_bram_block {BRAM_Controller} $blk_mem_gen_0
 
 
-  # Create instance: axi_bram_ctrl_1, and set properties
-  set axi_bram_ctrl_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.1 axi_bram_ctrl_1 ]
-  set_property -dict [list \
-    CONFIG.PROTOCOL {AXI4LITE} \
-    CONFIG.SINGLE_PORT_BRAM {1} \
-  ] $axi_bram_ctrl_1
-
-
-  # Create instance: axi_bram_ctrl_2, and set properties
-  set axi_bram_ctrl_2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.1 axi_bram_ctrl_2 ]
-  set_property -dict [list \
-    CONFIG.PROTOCOL {AXI4LITE} \
-    CONFIG.SINGLE_PORT_BRAM {1} \
-  ] $axi_bram_ctrl_2
-
-
-  # Create instance: blk_mem_gen_1, and set properties
-  set blk_mem_gen_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 blk_mem_gen_1 ]
-  set_property CONFIG.use_bram_block {BRAM_Controller} $blk_mem_gen_1
-
-
-  # Create instance: blk_mem_gen_2, and set properties
-  set blk_mem_gen_2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 blk_mem_gen_2 ]
-  set_property CONFIG.use_bram_block {BRAM_Controller} $blk_mem_gen_2
-
-
   # Create interface connections
   connect_bd_intf_net -intf_net axi_bram_ctrl_0_BRAM_PORTA [get_bd_intf_pins axi_bram_ctrl_0/BRAM_PORTA] [get_bd_intf_pins blk_mem_gen_0/BRAM_PORTA]
-  connect_bd_intf_net -intf_net axi_bram_ctrl_1_BRAM_PORTA [get_bd_intf_pins axi_bram_ctrl_1/BRAM_PORTA] [get_bd_intf_pins blk_mem_gen_1/BRAM_PORTA]
-  connect_bd_intf_net -intf_net axi_bram_ctrl_2_BRAM_PORTA [get_bd_intf_pins axi_bram_ctrl_2/BRAM_PORTA] [get_bd_intf_pins blk_mem_gen_2/BRAM_PORTA]
   connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_pins axi_interconnect_0/M00_AXI] [get_bd_intf_pins axi_uartlite_0/S_AXI]
   connect_bd_intf_net -intf_net axi_interconnect_0_M01_AXI [get_bd_intf_pins axi_interconnect_0/M01_AXI] [get_bd_intf_pins axi_bram_ctrl_0/S_AXI]
-  connect_bd_intf_net -intf_net axi_interconnect_0_M02_AXI [get_bd_intf_pins axi_interconnect_0/M02_AXI] [get_bd_intf_pins axi_bram_ctrl_1/S_AXI]
-  connect_bd_intf_net -intf_net axi_interconnect_0_M03_AXI [get_bd_intf_pins axi_interconnect_0/M03_AXI] [get_bd_intf_pins axi_bram_ctrl_2/S_AXI]
   connect_bd_intf_net -intf_net axi_uartlite_0_UART [get_bd_intf_ports usb_uart] [get_bd_intf_pins axi_uartlite_0/UART]
 connect_bd_intf_net -intf_net [get_bd_intf_nets axi_uartlite_0_UART] [get_bd_intf_ports usb_uart] [get_bd_intf_pins system_ila_0/SLOT_0_UART]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_intf_nets axi_uartlite_0_UART]
@@ -322,11 +330,7 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets axi_uartlite_0_UART] [get_bd_int
   [get_bd_pins axi_interconnect_0/M01_ARESETN] \
   [get_bd_pins axi_interconnect_0/S00_ARESETN] \
   [get_bd_pins axi_interconnect_0/ARESETN] \
-  [get_bd_pins axi_bram_ctrl_0/s_axi_aresetn] \
-  [get_bd_pins axi_bram_ctrl_1/s_axi_aresetn] \
-  [get_bd_pins axi_bram_ctrl_2/s_axi_aresetn] \
-  [get_bd_pins axi_interconnect_0/M02_ARESETN] \
-  [get_bd_pins axi_interconnect_0/M03_ARESETN]
+  [get_bd_pins axi_bram_ctrl_0/s_axi_aresetn]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets Net]
   connect_bd_net -net clk_wiz_0_clk_out1  [get_bd_ports clk] \
   [get_bd_pins axi_uartlite_0/s_axi_aclk] \
@@ -336,11 +340,7 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets axi_uartlite_0_UART] [get_bd_int
   [get_bd_pins axi_interconnect_0/M00_ACLK] \
   [get_bd_pins axi_interconnect_0/M01_ACLK] \
   [get_bd_pins axi_interconnect_0/S00_ACLK] \
-  [get_bd_pins axi_bram_ctrl_0/s_axi_aclk] \
-  [get_bd_pins axi_bram_ctrl_1/s_axi_aclk] \
-  [get_bd_pins axi_bram_ctrl_2/s_axi_aclk] \
-  [get_bd_pins axi_interconnect_0/M02_ACLK] \
-  [get_bd_pins axi_interconnect_0/M03_ACLK]
+  [get_bd_pins axi_bram_ctrl_0/s_axi_aclk]
   connect_bd_net -net interrupt  [get_bd_pins axi_uartlite_0/interrupt] \
   [get_bd_pins system_ila_0/probe0]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets interrupt]
@@ -350,16 +350,13 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets axi_uartlite_0_UART] [get_bd_int
   [get_bd_ports led]
 
   # Create address segments
-  assign_bd_address -offset 0x10000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces snn_axil_0/M00_AXI] [get_bd_addr_segs axi_bram_ctrl_0/S_AXI/Mem0] -force
-  assign_bd_address -offset 0x20000000 -range 0x00002000 -target_address_space [get_bd_addr_spaces snn_axil_0/M00_AXI] [get_bd_addr_segs axi_bram_ctrl_1/S_AXI/Mem0] -force
-  assign_bd_address -offset 0x40000000 -range 0x00002000 -target_address_space [get_bd_addr_spaces snn_axil_0/M00_AXI] [get_bd_addr_segs axi_bram_ctrl_2/S_AXI/Mem0] -force
+  assign_bd_address -offset 0x00000080 -range 0x00000080 -target_address_space [get_bd_addr_spaces snn_axil_0/M00_AXI] [get_bd_addr_segs axi_bram_ctrl_0/S_AXI/Mem0] -force
   assign_bd_address -offset 0x00000000 -range 0x00000080 -target_address_space [get_bd_addr_spaces snn_axil_0/M00_AXI] [get_bd_addr_segs axi_uartlite_0/S_AXI/Reg] -force
 
 
   # Restore current instance
   current_bd_instance $oldCurInst
 
-  validate_bd_design
   save_bd_design
 }
 # End of create_root_design()
@@ -371,4 +368,6 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets axi_uartlite_0_UART] [get_bd_int
 
 create_root_design ""
 
+
+common::send_gid_msg -ssname BD::TCL -id 2053 -severity "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
 

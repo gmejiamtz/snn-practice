@@ -61,7 +61,7 @@ end
 always_comb begin : next_state
     state_d = state_q;
     ready_d = ready_q;
-    valid_q = valid_d;
+    valid_d = valid_q;
     current_d = current_q;
     spike_count_d = spike_count_q;
     reset_count = 1'b0;

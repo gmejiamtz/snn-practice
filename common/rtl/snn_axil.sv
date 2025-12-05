@@ -3,14 +3,14 @@ module snn_axil #(
     parameter integer weight_output_p = 32,
     //has -1.0, -0.5, 0.0, 0.25, 0.5, 1.0
     parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
-    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
-    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
-    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
-    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
-    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
-    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
-    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
-    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_2_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_3_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_4_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_5_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_6_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_7_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_8_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_9_p = "../util/test.hex",
     parameter string hidden_weight_hexfile_10_p = "../util/test.hex",
     parameter string hidden_weight_hexfile_11_p = "../util/test.hex",
     parameter string hidden_weight_hexfile_12_p = "../util/test.hex",
@@ -35,9 +35,9 @@ module snn_axil #(
     parameter string hidden_weight_hexfile_31_p = "../util/test.hex",
     parameter string hidden_weight_hexfile_32_p = "../util/test.hex",
     //output neuron hexfiles
-    parameter string weights_output_neuron_1_p = "../util/test1.hex",
-    parameter string weights_output_neuron_2_p = "../util/test1.hex",
-    parameter string weights_output_neuron_3_p = "../util/test1.hex"
+    parameter string output_weight_hexfile_1_p = "../util/test1.hex",
+    parameter string output_weight_hexfile_2_p = "../util/test1.hex",
+    parameter string output_weight_hexfile_3_p = "../util/test1.hex"
 ) (
     // Clock
     (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME M00_AXI_ACLK, ASSOCIATED_BUSIF M00_AXI, ASSOCIATED_RESET M00_AXI_ARESETN" *)
@@ -398,9 +398,9 @@ end
       .weights_output_neuron_1_p(output_weight_hexfile_1_p),
       .weights_output_neuron_2_p(output_weight_hexfile_2_p),
       .weights_output_neuron_3_p(output_weight_hexfile_3_p)
-     ) dut(
-        .clk_i(clk),
-        .resetn_i(resetn),
+     ) snn(
+        .clk_i(M00_ACLK),
+        .resetn_i(M00_ARESETN),
         .valid_i(valid_i),
         .ready_o(ready_o),
         .euler_imu_x(euler_imu_x_i),

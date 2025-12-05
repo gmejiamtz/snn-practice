@@ -1,4 +1,44 @@
-module snn_axil (
+module snn_axil #(
+    parameter integer weight_hidden_p = 6,
+    parameter integer weight_output_p = 32,
+    //has -1.0, -0.5, 0.0, 0.25, 0.5, 1.0
+    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_1_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_10_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_11_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_12_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_13_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_14_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_15_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_16_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_17_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_18_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_19_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_20_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_21_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_22_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_23_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_24_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_25_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_26_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_27_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_28_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_29_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_30_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_31_p = "../util/test.hex",
+    parameter string hidden_weight_hexfile_32_p = "../util/test.hex",
+    //output neuron hexfiles
+    parameter string weights_output_neuron_1_p = "../util/test1.hex",
+    parameter string weights_output_neuron_2_p = "../util/test1.hex",
+    parameter string weights_output_neuron_3_p = "../util/test1.hex"
+) (
     // Clock
     (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME M00_AXI_ACLK, ASSOCIATED_BUSIF M00_AXI, ASSOCIATED_RESET M00_AXI_ARESETN" *)
     (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 M00_AXI_ACLK CLK" *)
@@ -320,11 +360,60 @@ end
 
 // Spiking Neural Net
 
-spiking_neural_net snn_inst (
-    .clk_i(clk_i),
-    .resetn_i(resetn_i),
-    .valid_i(M00_axi_rvalid), //will change with an internal fsm
-    
-);
+  spiking_neural_net #(
+      .weight_hidden_p(weight_hidden_p),
+      .weight_output_p(weight_output_p),
+      .weights_hidden_neuron_1_p(hidden_weight_hexfile_1_p),
+      .weights_hidden_neuron_2_p(hidden_weight_hexfile_2_p),
+      .weights_hidden_neuron_3_p(hidden_weight_hexfile_3_p),
+      .weights_hidden_neuron_4_p(hidden_weight_hexfile_4_p),
+      .weights_hidden_neuron_5_p(hidden_weight_hexfile_5_p),
+      .weights_hidden_neuron_6_p(hidden_weight_hexfile_6_p),
+      .weights_hidden_neuron_7_p(hidden_weight_hexfile_7_p),
+      .weights_hidden_neuron_8_p(hidden_weight_hexfile_8_p),
+      .weights_hidden_neuron_9_p(hidden_weight_hexfile_9_p),
+      .weights_hidden_neuron_10_p(hidden_weight_hexfile_10_p),
+      .weights_hidden_neuron_11_p(hidden_weight_hexfile_11_p),
+      .weights_hidden_neuron_12_p(hidden_weight_hexfile_12_p),
+      .weights_hidden_neuron_13_p(hidden_weight_hexfile_13_p),
+      .weights_hidden_neuron_14_p(hidden_weight_hexfile_14_p),
+      .weights_hidden_neuron_15_p(hidden_weight_hexfile_15_p),
+      .weights_hidden_neuron_16_p(hidden_weight_hexfile_16_p),
+      .weights_hidden_neuron_17_p(hidden_weight_hexfile_17_p),
+      .weights_hidden_neuron_18_p(hidden_weight_hexfile_18_p),
+      .weights_hidden_neuron_19_p(hidden_weight_hexfile_19_p),
+      .weights_hidden_neuron_20_p(hidden_weight_hexfile_20_p),
+      .weights_hidden_neuron_21_p(hidden_weight_hexfile_21_p),
+      .weights_hidden_neuron_22_p(hidden_weight_hexfile_22_p),
+      .weights_hidden_neuron_23_p(hidden_weight_hexfile_23_p),
+      .weights_hidden_neuron_24_p(hidden_weight_hexfile_24_p),
+      .weights_hidden_neuron_25_p(hidden_weight_hexfile_25_p),
+      .weights_hidden_neuron_26_p(hidden_weight_hexfile_26_p),
+      .weights_hidden_neuron_27_p(hidden_weight_hexfile_27_p),
+      .weights_hidden_neuron_28_p(hidden_weight_hexfile_28_p),
+      .weights_hidden_neuron_29_p(hidden_weight_hexfile_29_p),
+      .weights_hidden_neuron_30_p(hidden_weight_hexfile_30_p),
+      .weights_hidden_neuron_31_p(hidden_weight_hexfile_31_p),
+      .weights_hidden_neuron_32_p(hidden_weight_hexfile_32_p),
+      .weights_output_neuron_1_p(output_weight_hexfile_1_p),
+      .weights_output_neuron_2_p(output_weight_hexfile_2_p),
+      .weights_output_neuron_3_p(output_weight_hexfile_3_p)
+     ) dut(
+        .clk_i(clk),
+        .resetn_i(resetn),
+        .valid_i(valid_i),
+        .ready_o(ready_o),
+        .euler_imu_x(euler_imu_x_i),
+        .euler_imu_y(euler_imu_y_i),
+        .euler_imu_z(euler_imu_z_i),
+        .position_x(position_x_i),
+        .position_y(position_y_i),
+        .position_z(position_z_i),
+        .vel_imu_x(vel_imu_x_o),
+        .vel_imu_y(vel_imu_y_o),
+        .vel_imu_z(vel_imu_z_o),
+        .valid_o(valid_o),
+        .ready_i(ready_i)
+    );
 
 endmodule

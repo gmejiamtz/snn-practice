@@ -1,11 +1,11 @@
 module lif_neuron #(
-    parameter logic [31:0] threshold_p = 32'd65536
+    parameter logic signed [31:0] threshold_p = 32'sd65536
     )(
     input wire          clk_i,
     input wire          resetn_i,
     input wire          valid_i,
     output logic        ready_o,
-    input logic [31:0]  current_i,
+    input logic signed [31:0]  current_i,
     output logic        spk_o,
     output logic        valid_o,
     input logic         ready_i
@@ -13,8 +13,8 @@ module lif_neuron #(
 
     typedef enum logic [1:0] { idle, compute, done } state_t;
 
-    logic [31:0] membrane_d, membrane_q;
-    logic [31:0] current_reg;
+    logic signed [31:0] membrane_d, membrane_q;
+    logic signed [31:0] current_reg;
 
     state_t state_d,state_q;
     logic valid_d,valid_q;
@@ -75,7 +75,7 @@ module lif_neuron #(
             compute: begin
                 valid_d = 1'b0;
                 ready_d = 1'b0;
-                membrane_d = current_reg + (membrane_q >> 32'b1);
+                membrane_d = current_reg + (membrane_q >>> 32'b1);
                 if(membrane_d >= threshold_p) begin
                     spk_d = 1'b1;
                     state_d = done;

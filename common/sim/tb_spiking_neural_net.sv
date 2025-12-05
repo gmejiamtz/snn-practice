@@ -179,12 +179,15 @@ module tb_spiking_neural_net;
                 32'hFFFEA8FA    //-1.15
             );
         end
-        wait_till_done();
-        repeat(50) begin
+        wait_till_done();        
+        //reset dut
+        reset_dut();
+        send_downstream(0);
+        repeat(500000) begin
             send_data(
-                32'h0000f300,   //0.95
-                32'h0000f300,   //0.95
-                32'h0000f300,   //0.95
+                32'h00000000,   //0.00
+                32'h00000000,   //0.95
+                32'h00000000,   //0.95
                 32'h0000f300,   //0.95
                 32'h0000f300,   //0.95
                 32'h0000f300   //0.95

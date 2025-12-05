@@ -9,12 +9,12 @@ module current_acc #(
     output ready_o,       //can take in these spikes
     input ready_i,        //downstream LIF can take current
     output valid_o,       //calculated current into downstream LIF is valid
-    output [31:0] current_o
+    output logic signed [31:0] current_o
 );
 
 typedef enum logic [1:0] { idle, acc, done } state_t;
 
-logic [31:0] current_d, current_q;
+logic signed [31:0] current_d, current_q;
 logic valid_d,valid_q;
 logic ready_d,ready_q;
 state_t state_d, state_q;
@@ -23,7 +23,7 @@ logic [$clog2(weight_num_p):0] spike_count_q, spike_count_d;
 logic reset_count;
 
 //weight memory
-logic [31:0] weight [0:weight_num_p-1];
+logic signed [31:0] weight [0:weight_num_p-1];
 initial begin
     $readmemh(weight_hexfile_p,weight);
 end

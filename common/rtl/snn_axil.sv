@@ -280,6 +280,12 @@ always_comb begin : snn_state_logic
     snn_ready_d = snn_ready_q;
     start_read = 0;
     start_write = 0;
+    euler_imu_x_d = euler_imu_x;
+    euler_imu_y_d = euler_imu_y;
+    euler_imu_z_d = euler_imu_z;
+    position_x_d = position_x;
+    position_y_d = position_y;
+    position_z_d = position_z;
     //bram index
     bram_index_reg_d = bram_index_reg_q;
     bram_index_reg_reset = 1'b1;
@@ -336,7 +342,7 @@ always_comb begin : snn_state_logic
                     snn_valid_d = 1;
                     snn_ready_d = 1;
                 end else begin
-                    snn_state_d = setup_snn_data;
+                    snn_state_d = setup_snn;
                 end
             end else begin
                 snn_state_d = setup_snn;
@@ -374,13 +380,31 @@ end
 
 always_ff @(posedge M00_ACLK) begin
     if (!M00_ARESETN) begin
-        euler_imu_x <= 33'h0;
-        euler_imu_y <= 33'h0;
-        euler_imu_z <= 33'h0;
+        euler_imu_x <= 32'h0;
+        euler_imu_y <= 32'h0;
+        euler_imu_z <= 32'h0;
+        position_x <= 32'h0;
+        position_y <= 32'h0;
+        position_z <= 32'h0;
     end else if (snn_valid_i & snn_ready_o) begin
-        euler_imu_x <= 33'h0;
-        euler_imu_y <= 33'h0;
-        euler_imu_z <= 33'h0;
+        euler_imu_x <= euler_imu_x_d;
+        euler_imu_y <= euler_imu_y_d;
+        euler_imu_z <= euler_imu_z_d;
+        position_x <= position_x_d;
+        position_y <= position_y_d;
+        position_z <= position_z_d;
+    end
+end
+
+always_ff @(posedge M00_ACLK) begin
+    if(!M00_ARESETN) begin
+        snn_state_q <= idle;
+        snn_valid_q <= 0;
+        snn_ready_q <= 0;
+    end else begin
+        snn_state_q <= snn_state_d;
+        snn_valid_q <= snn_valid_d;
+        snn_ready_q <= snn_ready_d;
     end
 end
 

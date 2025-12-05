@@ -129,6 +129,22 @@ module tb_spiking_neural_net;
     end
     endtask
     
+    task send_downstream(input logic one_cycle); begin
+        @(negedge clk);
+        ready_i = 1;
+        @(posedge clk);
+        $display("Downstream is ready!");
+        @(negedge clk);
+        if(one_cycle) begin
+        ready_i = 0;
+        @(posedge clk);
+        $display("Downstream request over");
+        end else begin
+            @(posedge clk);
+        end
+    end
+    endtask
+    
     task wait_cycles(input int n); begin
         repeat (n) begin
             @(posedge clk);
@@ -139,8 +155,43 @@ module tb_spiking_neural_net;
     // Example test sequence
     initial begin
         reset_dut();
+        send_data(
+            32'h0000F332,
+            32'h0000F332,
+            32'h0000F332,
+            32'h0000F332,
+            32'h0000F332,
+            32'h0000F332
+        );
         wait_cycles(10);
+        wait_till_done();
         wait_cycles(10);
+        send_downstream(1);
+        wait_cycles(10);
+        send_downstream(0);
+        repeat(50) begin
+            send_data(
+                32'h00018000,   //1.5
+                32'h0000F332,   //0,95
+                32'hFFFD4F73,   //-2.675
+                32'h00008CBD,   //0.55
+                32'h00036725,   //3.412
+                32'hFFFEA8FA    //-1.15
+            );
+        end
+        wait_till_done();
+        repeat(50) begin
+            send_data(
+                32'h0000f300,   //0.95
+                32'h0000f300,   //0.95
+                32'h0000f300,   //0.95
+                32'h0000f300,   //0.95
+                32'h0000f300,   //0.95
+                32'h0000f300   //0.95
+            );
+        end
+        wait_till_done();
+        $display("SIM DONE");
         $finish;
     end
 

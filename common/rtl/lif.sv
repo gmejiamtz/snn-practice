@@ -4,7 +4,7 @@ module lif #(
     ) (
     input clk_i,
     input resetn_i,
-    input [5:0] spikes_i, //hidden layer takes from 6 input layer
+    input [weight_num_p-1:0] spikes_i, //hidden layer takes from 6 input layer
     input valid_i,        //all the spikes are valid
     output ready_o,       //can take in these spikes
     input ready_i,        //downstream LIF can take current

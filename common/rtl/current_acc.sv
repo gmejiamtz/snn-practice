@@ -19,7 +19,7 @@ logic valid_d,valid_q;
 logic ready_d,ready_q;
 state_t state_d, state_q;
 logic [weight_num_p - 1:0] spikes_reg;
-logic [$clog2(weight_num_p)-1:0] spike_count_q, spike_count_d;
+logic [$clog2(weight_num_p):0] spike_count_q, spike_count_d;
 logic reset_count;
 
 //weight memory
@@ -51,7 +51,7 @@ always_ff @(posedge clk_i) begin
 end
 
 always_ff @(posedge clk_i) begin
-    if(~resetn_i) begin
+    if(~resetn_i | reset_count) begin
         spike_count_q <= 'b0;
     end else begin
         spike_count_q <= spike_count_d;

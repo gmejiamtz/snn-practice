@@ -11,7 +11,6 @@ date: December 5, 2025
 2. FPGA Design
 3. Data Processing
 4. Future Work
-5. Conclusion
 
 ## Prequisites
 
@@ -24,16 +23,16 @@ by what it is targetting: data processing, FPGA flow, website/documentation
 
 ---
 
-### Data processing
+### Data processing and training
 
 The dataset is stored in `hdf5` files or `.h5` files. An hdf5 reader or
 library is required extract data from these files. This project uses
-the Python `h5py` and `hdf5plugin` modules. To install them use the
-following:
+the Python `h5py` and `hdf5plugin` modules. For training weights, this
+project uses `PyTorch`. To install them use the following:
 
 ```
 conda install h5py
-pip install hdf5plugin matlibplot
+pip install hdf5plugin matlibplot torch
 ```
 
 ---
@@ -199,7 +198,35 @@ address is `0x0-0x80` and the external BRAM is `0x80-0xFF`.
 
 ---
 
-### TBA
+### Overview of scripts
+
+- `download.py` - Download the dataset
+- `data_processing.py` - Reads out the data into .npy files
+- `weight_train.py` - Uses a simple SNN off chip to train weights and save them as .npy
+- `hexfile_generation.py` - Generates the hexfiles for the LIF neurons in the SNN
+- `uart.py` - Sends out the dataset into the FPGA via UART
+
+---
+
+### How data is processed
+
+- Dataset processing is done in `data_processing.py` and stored in `.h5 files
+- Requires a special library to index them, I use `h5py` and `hdf5plugin`
+- Script contains functions to read out data groups and store those into .npy files
+  - `numpy` is used in all other scripts to manipulate data afterwards
+
+---
+
+### Weight Training
+
+- Training is done in `weight_train.py`
+  - Requires the dataset to be processed via `data_processing.py`
+- Library of choice is `PyTorch`
+  - I use a 2 layer feed-forward `SNNLikeNet` with uses 6 input features, 32 hidden features, and 3 output features
+  - Uses MSE for loss function and default Adam optimizer
+- Weights are converted into Q16.16 fixed point values for BRAM storage
+  - Multiply a float by 2^16 and round to nearest integer
+  - These are converted into hexfiles for use in the Verilog function `$readmemh`
 
 ## Future Work
 
@@ -234,6 +261,13 @@ problems for STA.
 
 This project currently uses a mostly AI generated script for training. With more time a more polished script
 may be developed for other policies.
+
+---
+
+### Faster Download Script
+
+The current download script works but takes up to 15 minutes to complete the download since it uses small
+chunks. Need to find a better library for downloads or rewrite the script.
 
 ## Thanks for watching
 

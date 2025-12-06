@@ -254,7 +254,7 @@ always_comb begin
     if(M00_axi_arvalid & M00_axi_arready) begin
         ar_valid_d = 1'b0;
     end
-    //where the next ar_addr
+    //where the next ar_addrs(-)
     case (snn_state_q)
         idle: ar_addr_d = STAT_REG_Address_lp;
         load_data: ar_addr_d = RxFifoAddress_lp;
@@ -288,7 +288,7 @@ always_comb begin : snn_state_logic
     position_z_d = position_z;
     //bram index
     bram_index_reg_d = bram_index_reg_q;
-    bram_index_reg_reset = 1'b1;
+    bram_index_reg_reset = 1'b0;
     //sets the w_data
     w_data_d = w_data_q;
     case (snn_state_q)
@@ -296,6 +296,8 @@ always_comb begin : snn_state_logic
             //signal to send data
             start_read = 1;
             start_write = 0;
+            w_data_d = '0;
+            bram_index_reg_reset = 1'b1;
             if(M00_axi_rready & M00_axi_rvalid & M00_axi_rdata[0]) begin
                 snn_state_d = load_data;
             end else begin

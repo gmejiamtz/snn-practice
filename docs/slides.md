@@ -199,13 +199,41 @@ address is `0x0-0x80` and the external BRAM is `0x80-0xFF`.
 
 ---
 
-###
+### TBA
 
 ## Future Work
 
 ---
 
-### TBD
+### Proper Inference working
+
+This project is almost done. All data is processed for FPGA transmission however the system still has
+bugs. Additionally, the main `spiking_neural_net.sv` testbench can take in data from external files once
+they have been processed. With more time, this project can have inference being done in simulation or
+hardware.
+
+### More Simulations
+
+Only the `current_acc.sv` module has a through testbench, all others only check if data passes thru
+with no X propogation
+
+Since all modules use the Ready-Valid handshake in some format, formal verification can be employed
+to formally prove proper handshaking
+
+---
+
+### Larger BAUD Rate
+
+Basys3 board can support up to 450MHz. The UARTLite IP used has BAUDRate tied to the incoming AXI clock,
+which requires a PLL in order to modify. However the low WHS of both top level designs poses possible
+problems for STA.
+
+---
+
+### More SNN Training
+
+This project currently uses a mostly AI generated script for training. With more time a more polished script
+may be developed for other policies.
 
 ## Thanks for watching
 

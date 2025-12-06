@@ -17,7 +17,7 @@ pip install hdf5plugin matlibplot torch
 
 ### FPGA Software and Hardware
 
-The board used for this project is the ![Diligent Basys3](https://digilent.com/reference/programmable-logic/basys-3/reference-manual) and uses ![Xilinx Vivado 2025.2](https://www.xilinx.com/support/download.html) for implementation.
+The board used for this project is the [Diligent Basys3](https://digilent.com/reference/programmable-logic/basys-3/reference-manual) and uses [Xilinx Vivado 2025.2](https://www.xilinx.com/support/download.html) for implementation.
 
 ## Usage
 

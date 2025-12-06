@@ -9,6 +9,8 @@ import pdb
 
 ZIP_DIR = "downloaded_data"
 EXTRACT_DIR = "extracted_data"
+SAVED_DIR = "saved_arrays"
+GROUPS_TO_SAVE = ["Euler_imu", "position_OT", "vel_imu"]
 
 def unzip_all(zip_dir, extract_dir):
     os.makedirs(extract_dir, exist_ok=True)
@@ -72,14 +74,47 @@ def plot_hdf5_timeseries(file_path, group_name, dataset_x, dataset_y):
         plt.grid(True)
         plt.show()
 
+def save_hdf5_group_arrays(file_path, group_name, save_dir="saved_arrays"):
+    """
+    Save all datasets in a given HDF5 group to separate .npy files.
+    
+    Args:
+        file_path (str): Path to the HDF5 file
+        group_name (str): Name of the group to save, e.g. 'events'
+        save_dir (str): Directory where .npy files will be saved
+    """
+    import os
+    os.makedirs(save_dir, exist_ok=True)
+    file_base = os.path.splitext(os.path.basename(file_path))[0]
+    with h5py.File(file_path, 'r') as f:
+        group = f[group_name]
+        for dataset_name, dataset in group.items():
+            data_array = dataset[:]
+            save_path = os.path.join(save_dir, f"{group_name}_{dataset_name}_{file_base}.npy")
+            np.save(save_path, data_array)
+            print(f"Saved {group_name}/{dataset_name} -> {save_path}")
+
+def count_true_in_array(arr: np.ndarray) -> int:
+    """
+    Count how many True values are in a numpy boolean array.
+
+    Args:
+        arr (np.ndarray): Input array (expected dtype=bool)
+
+    Returns:
+        int: Number of True entries
+    """
+    if arr.dtype != np.bool_:
+        print("Warning: array is not boolean, converting to bool.")
+        arr = arr.astype(bool)
+    
+    return np.count_nonzero(arr)
+
 if __name__ == "__main__":
     unzip_all(ZIP_DIR, EXTRACT_DIR)
-    file_path = "extracted_data/sr_dataset_gt/sr_dataset_h5/1.h5"
-    print_hdf5_tree(file_path)
-    plot_hdf5_timeseries(file_path, "Euler_imu", "ts", ["x", "y", "z"])
-    plot_hdf5_timeseries(file_path, "angular_rate_imu", "ts", ["x", "y", "z"])
-    plot_hdf5_timeseries(file_path, "gyro_static_unbiased", "ts", ["x", "y", "z"])
-    plot_hdf5_timeseries(file_path, "position_OT", "ts", ["x", "y", "z"])
-    plot_hdf5_timeseries(file_path, "vel_imu", "ts", ["x", "y", "z"])
-    plot_hdf5_timeseries(file_path, "vel_over_height_imu", "ts", ["x", "y", "z"])
-
+    train_data_path = f"{EXTRACT_DIR}/sr_dataset_gt/sr_dataset_train"
+    for filename in os.listdir(train_data_path):
+        if filename.endswith(".h5"):
+            save_hdf5_group_arrays(f"{train_data_path}/{filename}", GROUPS_TO_SAVE[0],save_dir=f"{SAVED_DIR}/{GROUPS_TO_SAVE[0]}")
+            save_hdf5_group_arrays(f"{train_data_path}/{filename}", GROUPS_TO_SAVE[1],save_dir=f"{SAVED_DIR}/{GROUPS_TO_SAVE[1]}")
+            save_hdf5_group_arrays(f"{train_data_path}/{filename}", GROUPS_TO_SAVE[2],save_dir=f"{SAVED_DIR}/{GROUPS_TO_SAVE[2]}")

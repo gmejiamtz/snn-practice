@@ -133,7 +133,10 @@ if { $bCheckIPs == 1 } {
 xilinx.com:ip:axi_uartlite:2.0\
 xilinx.com:ip:system_ila:1.1\
 user.org:user:snn_axil:1.0\
-xilinx.com:ip:util_vector_logic:2.0\
+xilinx.com:ip:axi_bram_ctrl:4.1\
+xilinx.com:ip:blk_mem_gen:8.4\
+xilinx.com:ip:smartconnect:1.0\
+xilinx.com:ip:proc_sys_reset:5.0\
 "
 
    set list_ips_missing ""
@@ -205,7 +208,7 @@ proc create_root_design { parentCell } {
   set_property -dict [ list \
    CONFIG.POLARITY {ACTIVE_HIGH} \
  ] $reset
-  set clk [ create_bd_port -dir I -type clk -freq_hz 40000000 clk ]
+  set clk [ create_bd_port -dir I -type clk -freq_hz 100000000 clk ]
   set sw [ create_bd_port -dir I -from 15 -to 0 -type data sw ]
   set led [ create_bd_port -dir O -from 15 -to 0 led ]
 
@@ -221,13 +224,13 @@ proc create_root_design { parentCell } {
   set system_ila_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:system_ila:1.1 system_ila_0 ]
   set_property -dict [list \
     CONFIG.C_MON_TYPE {MIX} \
-    CONFIG.C_NUM_MONITOR_SLOTS {2} \
+    CONFIG.C_NUM_MONITOR_SLOTS {4} \
     CONFIG.C_NUM_OF_PROBES {2} \
     CONFIG.C_PROBE0_TYPE {0} \
     CONFIG.C_PROBE1_TYPE {0} \
     CONFIG.C_SLOT_0_INTF_TYPE {xilinx.com:interface:uart_rtl:1.0} \
     CONFIG.C_SLOT_0_TYPE {0} \
-    CONFIG.C_SLOT_1_APC_EN {1} \
+    CONFIG.C_SLOT_1_APC_EN {0} \
     CONFIG.C_SLOT_1_AXI_AR_SEL_DATA {1} \
     CONFIG.C_SLOT_1_AXI_AR_SEL_TRIG {1} \
     CONFIG.C_SLOT_1_AXI_AW_SEL_DATA {1} \
@@ -239,49 +242,146 @@ proc create_root_design { parentCell } {
     CONFIG.C_SLOT_1_AXI_W_SEL_DATA {1} \
     CONFIG.C_SLOT_1_AXI_W_SEL_TRIG {1} \
     CONFIG.C_SLOT_1_INTF_TYPE {xilinx.com:interface:aximm_rtl:1.0} \
+    CONFIG.C_SLOT_2_APC_EN {0} \
+    CONFIG.C_SLOT_2_AXI_AR_SEL_DATA {1} \
+    CONFIG.C_SLOT_2_AXI_AR_SEL_TRIG {1} \
+    CONFIG.C_SLOT_2_AXI_AW_SEL_DATA {1} \
+    CONFIG.C_SLOT_2_AXI_AW_SEL_TRIG {1} \
+    CONFIG.C_SLOT_2_AXI_B_SEL_DATA {1} \
+    CONFIG.C_SLOT_2_AXI_B_SEL_TRIG {1} \
+    CONFIG.C_SLOT_2_AXI_R_SEL_DATA {1} \
+    CONFIG.C_SLOT_2_AXI_R_SEL_TRIG {1} \
+    CONFIG.C_SLOT_2_AXI_W_SEL_DATA {1} \
+    CONFIG.C_SLOT_2_AXI_W_SEL_TRIG {1} \
+    CONFIG.C_SLOT_2_INTF_TYPE {xilinx.com:interface:aximm_rtl:1.0} \
+    CONFIG.C_SLOT_3_APC_EN {0} \
+    CONFIG.C_SLOT_3_AXI_AR_SEL_DATA {1} \
+    CONFIG.C_SLOT_3_AXI_AR_SEL_TRIG {1} \
+    CONFIG.C_SLOT_3_AXI_AW_SEL_DATA {1} \
+    CONFIG.C_SLOT_3_AXI_AW_SEL_TRIG {1} \
+    CONFIG.C_SLOT_3_AXI_B_SEL_DATA {1} \
+    CONFIG.C_SLOT_3_AXI_B_SEL_TRIG {1} \
+    CONFIG.C_SLOT_3_AXI_R_SEL_DATA {1} \
+    CONFIG.C_SLOT_3_AXI_R_SEL_TRIG {1} \
+    CONFIG.C_SLOT_3_AXI_W_SEL_DATA {1} \
+    CONFIG.C_SLOT_3_AXI_W_SEL_TRIG {1} \
+    CONFIG.C_SLOT_3_INTF_TYPE {xilinx.com:interface:aximm_rtl:1.0} \
   ] $system_ila_0
 
 
   # Create instance: snn_axil_0, and set properties
   set snn_axil_0 [ create_bd_cell -type ip -vlnv user.org:user:snn_axil:1.0 snn_axil_0 ]
-
-  # Create instance: util_vector_logic_0, and set properties
-  set util_vector_logic_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.0 util_vector_logic_0 ]
   set_property -dict [list \
-    CONFIG.C_OPERATION {not} \
-    CONFIG.C_SIZE {1} \
-  ] $util_vector_logic_0
+    CONFIG.hidden_weight_hexfile_10_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_10.hex} \
+    CONFIG.hidden_weight_hexfile_11_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_11.hex} \
+    CONFIG.hidden_weight_hexfile_12_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_12.hex} \
+    CONFIG.hidden_weight_hexfile_13_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_13.hex} \
+    CONFIG.hidden_weight_hexfile_14_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_14.hex} \
+    CONFIG.hidden_weight_hexfile_15_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_15.hex} \
+    CONFIG.hidden_weight_hexfile_16_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_16.hex} \
+    CONFIG.hidden_weight_hexfile_17_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_17.hex} \
+    CONFIG.hidden_weight_hexfile_18_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_18.hex} \
+    CONFIG.hidden_weight_hexfile_19_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_19.hex} \
+    CONFIG.hidden_weight_hexfile_1_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_1.hex} \
+    CONFIG.hidden_weight_hexfile_20_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_20.hex} \
+    CONFIG.hidden_weight_hexfile_21_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_21.hex} \
+    CONFIG.hidden_weight_hexfile_22_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_22.hex} \
+    CONFIG.hidden_weight_hexfile_23_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_23.hex} \
+    CONFIG.hidden_weight_hexfile_24_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_24.hex} \
+    CONFIG.hidden_weight_hexfile_25_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_25.hex} \
+    CONFIG.hidden_weight_hexfile_26_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_26.hex} \
+    CONFIG.hidden_weight_hexfile_27_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_27.hex} \
+    CONFIG.hidden_weight_hexfile_28_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_28.hex} \
+    CONFIG.hidden_weight_hexfile_29_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_29.hex} \
+    CONFIG.hidden_weight_hexfile_2_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_2.hex} \
+    CONFIG.hidden_weight_hexfile_30_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_30.hex} \
+    CONFIG.hidden_weight_hexfile_31_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_31.hex} \
+    CONFIG.hidden_weight_hexfile_32_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_32.hex} \
+    CONFIG.hidden_weight_hexfile_3_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_3.hex} \
+    CONFIG.hidden_weight_hexfile_4_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_4.hex} \
+    CONFIG.hidden_weight_hexfile_5_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_5.hex} \
+    CONFIG.hidden_weight_hexfile_6_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_6.hex} \
+    CONFIG.hidden_weight_hexfile_7_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_7.hex} \
+    CONFIG.hidden_weight_hexfile_8_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_8.hex} \
+    CONFIG.hidden_weight_hexfile_9_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/hidden_neuron_9.hex} \
+    CONFIG.output_weight_hexfile_1_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/output_neuron_1.hex} \
+    CONFIG.output_weight_hexfile_2_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/output_neuron_2.hex} \
+    CONFIG.output_weight_hexfile_3_p {/home/gary/Documents/snn-practice/python/bram_weights/hexfiles/output_neuron_3.hex} \
+  ] $snn_axil_0
+
+
+  # Create instance: axi_bram_ctrl_0, and set properties
+  set axi_bram_ctrl_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.1 axi_bram_ctrl_0 ]
+  set_property -dict [list \
+    CONFIG.PROTOCOL {AXI4LITE} \
+    CONFIG.SINGLE_PORT_BRAM {1} \
+  ] $axi_bram_ctrl_0
+
+
+  # Create instance: blk_mem_gen_0, and set properties
+  set blk_mem_gen_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 blk_mem_gen_0 ]
+  set_property CONFIG.use_bram_block {BRAM_Controller} $blk_mem_gen_0
+
+
+  # Create instance: smartconnect_0, and set properties
+  set smartconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 smartconnect_0 ]
+  set_property -dict [list \
+    CONFIG.NUM_MI {2} \
+    CONFIG.NUM_SI {1} \
+  ] $smartconnect_0
+
+
+  # Create instance: proc_sys_reset_0, and set properties
+  set proc_sys_reset_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 proc_sys_reset_0 ]
+  set_property -dict [list \
+    CONFIG.C_AUX_RST_WIDTH {1} \
+    CONFIG.C_EXT_RST_WIDTH {1} \
+  ] $proc_sys_reset_0
 
 
   # Create interface connections
+  connect_bd_intf_net -intf_net axi_bram_ctrl_0_BRAM_PORTA [get_bd_intf_pins axi_bram_ctrl_0/BRAM_PORTA] [get_bd_intf_pins blk_mem_gen_0/BRAM_PORTA]
+  connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_pins smartconnect_0/M01_AXI] [get_bd_intf_pins axi_uartlite_0/S_AXI]
+connect_bd_intf_net -intf_net [get_bd_intf_nets axi_interconnect_0_M00_AXI] [get_bd_intf_pins smartconnect_0/M01_AXI] [get_bd_intf_pins system_ila_0/SLOT_2_AXI]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_intf_nets axi_interconnect_0_M00_AXI]
+  connect_bd_intf_net -intf_net axi_interconnect_0_M01_AXI [get_bd_intf_pins smartconnect_0/M00_AXI] [get_bd_intf_pins axi_bram_ctrl_0/S_AXI]
+connect_bd_intf_net -intf_net [get_bd_intf_nets axi_interconnect_0_M01_AXI] [get_bd_intf_pins smartconnect_0/M00_AXI] [get_bd_intf_pins system_ila_0/SLOT_3_AXI]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_intf_nets axi_interconnect_0_M01_AXI]
   connect_bd_intf_net -intf_net axi_uartlite_0_UART [get_bd_intf_ports usb_uart] [get_bd_intf_pins axi_uartlite_0/UART]
 connect_bd_intf_net -intf_net [get_bd_intf_nets axi_uartlite_0_UART] [get_bd_intf_ports usb_uart] [get_bd_intf_pins system_ila_0/SLOT_0_UART]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_intf_nets axi_uartlite_0_UART]
-  connect_bd_intf_net -intf_net snn_axil_0_M00_AXI [get_bd_intf_pins snn_axil_0/M00_AXI] [get_bd_intf_pins axi_uartlite_0/S_AXI]
+  connect_bd_intf_net -intf_net snn_axil_0_M00_AXI [get_bd_intf_pins snn_axil_0/M00_AXI] [get_bd_intf_pins smartconnect_0/S00_AXI]
 connect_bd_intf_net -intf_net [get_bd_intf_nets snn_axil_0_M00_AXI] [get_bd_intf_pins snn_axil_0/M00_AXI] [get_bd_intf_pins system_ila_0/SLOT_1_AXI]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_intf_nets snn_axil_0_M00_AXI]
 
   # Create port connections
-  connect_bd_net -net Net  [get_bd_pins util_vector_logic_0/Res] \
+  connect_bd_net -net Net  [get_bd_pins proc_sys_reset_0/peripheral_aresetn] \
   [get_bd_pins axi_uartlite_0/s_axi_aresetn] \
   [get_bd_pins system_ila_0/resetn] \
   [get_bd_pins snn_axil_0/M00_ARESETN] \
-  [get_bd_pins system_ila_0/probe1]
+  [get_bd_pins system_ila_0/probe1] \
+  [get_bd_pins axi_bram_ctrl_0/s_axi_aresetn]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets Net]
   connect_bd_net -net clk_wiz_0_clk_out1  [get_bd_ports clk] \
   [get_bd_pins axi_uartlite_0/s_axi_aclk] \
   [get_bd_pins system_ila_0/clk] \
-  [get_bd_pins snn_axil_0/M00_ACLK]
+  [get_bd_pins snn_axil_0/M00_ACLK] \
+  [get_bd_pins axi_bram_ctrl_0/s_axi_aclk] \
+  [get_bd_pins smartconnect_0/aclk] \
+  [get_bd_pins proc_sys_reset_0/slowest_sync_clk]
   connect_bd_net -net interrupt  [get_bd_pins axi_uartlite_0/interrupt] \
   [get_bd_pins system_ila_0/probe0]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets interrupt]
+  connect_bd_net -net proc_sys_reset_0_interconnect_aresetn  [get_bd_pins proc_sys_reset_0/interconnect_aresetn] \
+  [get_bd_pins smartconnect_0/aresetn]
   connect_bd_net -net reset_1  [get_bd_ports reset] \
-  [get_bd_pins util_vector_logic_0/Op1]
+  [get_bd_pins proc_sys_reset_0/ext_reset_in]
   connect_bd_net -net sw_1  [get_bd_ports sw] \
   [get_bd_ports led]
 
   # Create address segments
-  assign_bd_address -offset 0x00000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces snn_axil_0/M00_AXI] [get_bd_addr_segs axi_uartlite_0/S_AXI/Reg] -force
+  assign_bd_address -offset 0x00000080 -range 0x00000080 -target_address_space [get_bd_addr_spaces snn_axil_0/M00_AXI] [get_bd_addr_segs axi_bram_ctrl_0/S_AXI/Mem0] -force
+  assign_bd_address -offset 0x00000000 -range 0x00000080 -target_address_space [get_bd_addr_spaces snn_axil_0/M00_AXI] [get_bd_addr_segs axi_uartlite_0/S_AXI/Reg] -force
 
 
   # Restore current instance

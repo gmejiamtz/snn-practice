@@ -87,7 +87,6 @@ class="title-slide slide level2">
 <li>FPGA Design</li>
 <li>Data Processing</li>
 <li>Future Work</li>
-<li>Conclusion</li>
 </ol>
 </section>
 
@@ -102,14 +101,15 @@ class="title-slide slide level2">
 classified by what it is targetting: data processing, FPGA flow,
 website/documentation</p>
 </section>
-<section id="data-processing" class="slide level3">
-<h3>Data processing</h3>
+<section id="data-processing-and-training" class="slide level3">
+<h3>Data processing and training</h3>
 <p>The dataset is stored in <code>hdf5</code> files or <code>.h5</code>
 files. An hdf5 reader or library is required extract data from these
 files. This project uses the Python <code>h5py</code> and
-<code>hdf5plugin</code> modules. To install them use the following:</p>
+<code>hdf5plugin</code> modules. For training weights, this project uses
+<code>PyTorch</code>. To install them use the following:</p>
 <pre><code>conda install h5py
-pip install hdf5plugin matlibplot</code></pre>
+pip install hdf5plugin matlibplot torch</code></pre>
 </section>
 <section id="how-to-process-data" class="slide level3">
 <h3>How to process data</h3>
@@ -119,6 +119,12 @@ make download-dataset
 
 #To process dataset and make packets
 make process-dataset
+
+#To train the weights
+make weight-train
+
+#To create the hexfiles required for FPGA synthesis
+make hexfiles
 
 #To send packets to FPGA
 make send-to-fpga</code></pre>
@@ -138,11 +144,12 @@ LUTs</figcaption>
 <section id="to-run-the-fpga-flow" class="slide level3">
 <h3>To run the FPGA Flow</h3>
 <p>The FPGA flow is ran through the central makefile commands:</p>
-<pre><code>#To create the Vivado project
-make project
+<pre><code>
+#To create the SNN IP required for the main project
+make create_ip
 
-#To run simulations
-make run-sim
+#To create the Vivado project
+make project
 
 #To run the FPGA flow and generate a bitstream
 make run-pnr
@@ -171,32 +178,216 @@ sudo apt install ./pandoc-3.8.2.1-1-amd64.deb</code></pre>
 <h2>FPGA Design</h2>
 
 </section>
-<section id="tbd" class="slide level3">
-<h3>TBD</h3>
+<section id="leaky-integrate-fire-neuron" class="slide level3">
+<h3>Leaky Integrate Fire Neuron</h3>
+<figure>
+<img data-src="img/lif_neuron_drawing.png"
+alt="Uses Ready-Valid handshake to data transfer and backpressure" />
+<figcaption aria-hidden="true">Uses Ready-Valid handshake to data
+transfer and backpressure</figcaption>
+</figure>
+</section>
+<section id="lif-neuron-fsm-for-data-transfer" class="slide level3">
+<h3>LIF Neuron FSM for Data Transfer</h3>
+<figure>
+<img data-src="img/lif_neuron_fsm.png"
+alt="Compute state lasts for a cycle as computation is combinational only" />
+<figcaption aria-hidden="true">Compute state lasts for a cycle as
+computation is combinational only</figcaption>
+</figure>
+</section>
+<section id="accumulator-design" class="slide level3">
+<h3>Accumulator Design</h3>
+<figure>
+<img data-src="img/acc_drawing.png"
+alt="Bram holds a parameterized number of weights and is loaded via a parameterized hexfile" />
+<figcaption aria-hidden="true">Bram holds a parameterized number of
+weights and is loaded via a parameterized hexfile</figcaption>
+</figure>
+</section>
+<section id="accumulator-fsm-for-data-transfer" class="slide level3">
+<h3>Accumulator FSM for Data Transfer</h3>
+<figure>
+<img data-src="img/acc_fsm.png"
+alt="FSM holds the accumulate state until all weights have been indexed" />
+<figcaption aria-hidden="true">FSM holds the accumulate state until all
+weights have been indexed</figcaption>
+</figure>
+</section>
+<section id="lif-accumulator" class="slide level3">
+<h3>LIF + Accumulator</h3>
+<figure>
+<img data-src="img/lif_drawing.png"
+alt="Creates an interface that takes in spikes and outputs a spike" />
+<figcaption aria-hidden="true">Creates an interface that takes in spikes
+and outputs a spike</figcaption>
+</figure>
+</section>
+<section id="spiking-neural-network-architecture" class="slide level3">
+<h3>Spiking Neural Network Architecture</h3>
+<p>Input layer - 6 Neurons Hidden layer - 32 Neurons Output layer - 3
+Neurons</p>
+<p>Note: Input layer neurons take in current while hidden and output
+layer neurons take in spikes</p>
+</section>
+<section id="snn-with-axi-lite" class="slide level3">
+<h3>SNN with AXI Lite</h3>
+<p>AXI Lite is a communication protocal for FPGA systems. Useful for
+memory mapped IO on the system. SNN uses it to communicate to the UART
+module for data transmission and external BRAM to store incoming data
+for processing. UART address is <code>0x0-0x80</code> and the external
+BRAM is <code>0x80-0xFF</code>.</p>
+</section>
+<section id="top-level-design" class="slide level3">
+<h3>Top Level Design</h3>
+<figure>
+<img data-src="img/bd_top.png" alt="Block Design" />
+<figcaption aria-hidden="true">Block Design</figcaption>
+</figure>
+</section>
+<section id="top-level-utilization-and-timing-report"
+class="slide level3">
+<h3>Top Level Utilization and Timing Report</h3>
+<ul>
+<li><p>Timing Report</p>
+<ul>
+<li>WNS - 1.746ns</li>
+<li>WHS - 0.026ns</li>
+</ul></li>
+<li><p>Utilization</p>
+<ul>
+<li>LUT - 4873/20800 (23.43%)</li>
+<li>LUTRAM - 13/9600 (0.14%)</li>
+<li>FF - 5271/41600 (12.67%)</li>
+<li>BRAM - 0.50/50 (1.00%)</li>
+<li>IO - 36/106 (33.96%)</li>
+</ul></li>
+</ul>
+</section>
+<section id="top-level-design-with-ila" class="slide level3">
+<h3>Top Level Design with ILA</h3>
+<figure>
+<img data-src="img/top_bd_debug.png"
+alt="ILA is useful for hardware debugging, think of it as FPGA GDB" />
+<figcaption aria-hidden="true">ILA is useful for hardware debugging,
+think of it as FPGA GDB</figcaption>
+</figure>
+</section>
+<section id="top-level-ila-utilization-and-timing-report"
+class="slide level3">
+<h3>Top Level (ILA) Utilization and Timing Report</h3>
+<ul>
+<li><p>Timing Report</p>
+<ul>
+<li>WNS - 2.176ns</li>
+<li>WHS - 0.026ns</li>
+</ul></li>
+<li><p>Utilization</p>
+<ul>
+<li>LUT - 8633/20800 (41.50%)</li>
+<li>LUTRAM - 708/9600 (7.73%)</li>
+<li>FF - 11266/41600 (27.08%)</li>
+<li>BRAM - 11.50/50 (23.00%)</li>
+<li>IO - 36/106 (33.96%)</li>
+</ul></li>
+</ul>
 </section></section>
 <section>
-<section id="data-processing-1" class="title-slide slide level2">
+<section id="data-processing" class="title-slide slide level2">
 <h2>Data Processing</h2>
 
 </section>
-<section id="tbd-1" class="slide level3">
-<h3>TBD</h3>
+<section id="overview-of-scripts" class="slide level3">
+<h3>Overview of scripts</h3>
+<ul>
+<li><code>download.py</code> - Download the dataset</li>
+<li><code>data_processing.py</code> - Reads out the data into .npy
+files</li>
+<li><code>weight_train.py</code> - Uses a simple SNN off chip to train
+weights and save them as .npy</li>
+<li><code>hexfile_generation.py</code> - Generates the hexfiles for the
+LIF neurons in the SNN</li>
+<li><code>uart.py</code> - Sends out the dataset into the FPGA via
+UART</li>
+</ul>
+</section>
+<section id="how-data-is-processed" class="slide level3">
+<h3>How data is processed</h3>
+<ul>
+<li>Dataset processing is done in <code>data_processing.py</code> and
+stored in `.h5 files</li>
+<li>Requires a special library to index them, I use <code>h5py</code>
+and <code>hdf5plugin</code></li>
+<li>Script contains functions to read out data groups and store those
+into .npy files
+<ul>
+<li><code>numpy</code> is used in all other scripts to manipulate data
+afterwards</li>
+</ul></li>
+</ul>
+</section>
+<section id="weight-training" class="slide level3">
+<h3>Weight Training</h3>
+<ul>
+<li>Training is done in <code>weight_train.py</code>
+<ul>
+<li>Requires the dataset to be processed via
+<code>data_processing.py</code></li>
+</ul></li>
+<li>Library of choice is <code>PyTorch</code>
+<ul>
+<li>I use a 2 layer feed-forward <code>SNNLikeNet</code> with uses 6
+input features, 32 hidden features, and 3 output features</li>
+<li>Uses MSE for loss function and default Adam optimizer</li>
+</ul></li>
+<li>Weights are converted into Q16.16 fixed point values for BRAM
+storage
+<ul>
+<li>Multiply a float by 2^16 and round to nearest integer</li>
+<li>These are converted into hexfiles for use in the Verilog function
+<code>$readmemh</code></li>
+</ul></li>
+</ul>
 </section></section>
 <section>
 <section id="future-work" class="title-slide slide level2">
 <h2>Future Work</h2>
 
 </section>
-<section id="tbd-2" class="slide level3">
-<h3>TBD</h3>
-</section></section>
-<section>
-<section id="conclusion" class="title-slide slide level2">
-<h2>Conclusion</h2>
-
+<section id="proper-inference-working" class="slide level3">
+<h3>Proper Inference working</h3>
+<p>This project is almost done. All data is processed for FPGA
+transmission however the system still has bugs. Additionally, the main
+<code>spiking_neural_net.sv</code> testbench can take in data from
+external files once they have been processed. With more time, this
+project can have inference being done in simulation or hardware.</p>
 </section>
-<section id="tbd-3" class="slide level3">
-<h3>TBD</h3>
+<section id="more-simulations" class="slide level3">
+<h3>More Simulations</h3>
+<p>Only the <code>current_acc.sv</code> module has a through testbench,
+all others only check if data passes thru with no X propogation</p>
+<p>Since all modules use the Ready-Valid handshake in some format,
+formal verification can be employed to formally prove proper
+handshaking</p>
+</section>
+<section id="larger-baud-rate" class="slide level3">
+<h3>Larger BAUD Rate</h3>
+<p>Basys3 board can support up to 450MHz. The UARTLite IP used has
+BAUDRate tied to the incoming AXI clock, which requires a PLL in order
+to modify. However the low WHS of both top level designs poses possible
+problems for STA.</p>
+</section>
+<section id="more-snn-training" class="slide level3">
+<h3>More SNN Training</h3>
+<p>This project currently uses a mostly AI generated script for
+training. With more time a more polished script may be developed for
+other policies.</p>
+</section>
+<section id="faster-download-script" class="slide level3">
+<h3>Faster Download Script</h3>
+<p>The current download script works but takes up to 15 minutes to
+complete the download since it uses small chunks. Need to find a better
+library for downloads or rewrite the script.</p>
 </section></section>
 <section id="thanks-for-watching" class="title-slide slide level2">
 <h2>Thanks for watching</h2>

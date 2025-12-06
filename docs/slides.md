@@ -48,6 +48,12 @@ make download-dataset
 #To process dataset and make packets
 make process-dataset
 
+#To train the weights
+make weight-train
+
+#To create the hexfiles required for FPGA synthesis
+make hexfiles
+
 #To send packets to FPGA
 make send-to-fpga
 ```
@@ -68,11 +74,12 @@ Xlinix Vivado version used for this project is `2025.2`.
 The FPGA flow is ran through the central makefile commands:
 
 ```
+
+#To create the SNN IP required for the main project
+make create_ip
+
 #To create the Vivado project
 make project
-
-#To run simulations
-make run-sim
 
 #To run the FPGA flow and generate a bitstream
 make run-pnr

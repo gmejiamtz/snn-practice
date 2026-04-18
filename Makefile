@@ -22,7 +22,7 @@ board-flash: $(IPKERNEL_NAME)-$(PART)/$(IPKERNEL_NAME).runs/impl_1/*.bit board-f
 page: docs/index.html
 docs/index.html: docs/slides.md
 	pandoc -t revealjs -s -o $@ $< \
-	-V revealjs-url=https://unpkg.com/reveal.js \
+	-V revealjs-url=https://unpkg.com/reveal.js@4.6.1 \
 	-V theme=black \
     --include-in-header=docs/slides.css \
 	--slide-level 3
